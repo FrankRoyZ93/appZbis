@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>   
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+    <!--Import Google Icon Font-->
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="materialize/css/materialize.min.css" media="screen,projection">
+
+    <!-- Link to my CSS sheet -->
+    <link href="css/index.css" rel="stylesheet">
+
+    <!-- Materialize CSS -->
+    <link type="text/css" rel="stylesheet" href="materialize/css/materialize.css">
+
+    <title>AppZbisRDV</title>
+</head>
+<body>
+    <!-- Create List 
+    <div class="row">
+        <div class="col s12">
+            <div class="card-panel">
+                --><!-- Add area
+                <div class="row">
+                    <div class="col s11">
+                        <input type="text" id="addNewListText" maxlength="35" placeholder="Add new list..." />
+                    </div>
+                    <div class="col s1">
+                        <a class="btn-floating btn-large"><i class="material-icons prefix" onclick="CreateList(addNewListText.value, listsGrid)">add</i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- Grid 
+    <div class="row" id="listsGrid">
+    </div>-->
+
+    <!-- Modal Trigger -->
+    <div id="modal1Button" class="fixed-action-btn">
+        <a class="btn-floating btn-large">
+            <i class="large material-icons">add</i>
+        </a>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <h4>Modal Header</h4>
+            <p>A bunch of text</p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat" id="modal1ButtonAgree">Agree</a>
+        </div>
+    </div>
+
+    <!-- Add button 
+    <button data-target="modal1" class="btn modal-trigger" id="addNewListFab">
+        <i class="large material-icons">add</i>
+    </button>-->
+    
+    <!-- Add area 
+    <div id="modal1" class="modal">
+        <div class="modal-contant">
+            <input type="text" id="addNewListText" maxlength="35" placeholder="Add new list..." onkeypress="ValidateListCreation(addNewListText.value, listsGrid, event)" />
+            <p>Graou!</p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+        </div>
+    </div>-->
+
+    <!-- Debug -->
+    <p id="debug"></p>
+
+    <!-- This will be displayed if the executing browser does not support Javascript -->
+    <noscript>... no JS... ...wut?</noscript>
+
+    <!-- jQuery -->    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="scripts/jquery-3.1.1.js"></script>
+    <script type="text/javascript" src="scripts/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="jquery-ui-1.12.1.custom/jquery-ui.js"></script>
+    <script type="text/javascript" src="jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+
+    <script type="text/javascript" src="materialize/js/materialize.js"></script>
+    <script type="text/javascript" src="materialize/js/materialize.min.js"></script>
+
+    <!-- Cordova -->
+    <script type="text/javascript" src="cordova.js"></script>
+
+    <!-- Javascript -->
+    <script type="text/javascript" src="scripts/index.js"></script>
+
+    <!-- Drag & Drop script for mobile -->
+    <script type="text/javascript" src="scripts/jquery.ui.touch-punch.min.js"></script>
+
+    <script type="text/javascript">
+        document.addEventListener("deviceready", Load, false);
+
+        $(document).ready(function () {
+            $('.modal').modal();
+            // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+            $('.modal-trigger').leanModal();
+        });
+
+        //Open modal when FAB add is click
+        $("#modal1Button").click(function () {
+            $('#modal1').openModal();
+        });
+
+        //Close modal and call function to create eval
+        $("#modal1ButtonAgree").click(function () {
+            $('#modal1').closeModal();
+            //Autre code à executer quand je clique sur start
+        });
+    </script>
+</body>
+</html>
