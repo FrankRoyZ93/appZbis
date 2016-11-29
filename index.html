@@ -10,67 +10,65 @@
 
     <!-- Link to my CSS sheet -->
     <link href="css/index.css" rel="stylesheet">
-
-    <!-- Materialize CSS -->
-    <link type="text/css" rel="stylesheet" href="materialize/css/materialize.css">
-
+    
     <title>AppZbisRDV</title>
 </head>
 <body>
-    <!-- Create List 
-    <div class="row">
-        <div class="col s12">
-            <div class="card-panel">
-                --><!-- Add area
-                <div class="row">
-                    <div class="col s11">
-                        <input type="text" id="addNewListText" maxlength="35" placeholder="Add new list..." />
-                    </div>
-                    <div class="col s1">
-                        <a class="btn-floating btn-large"><i class="material-icons prefix" onclick="CreateList(addNewListText.value, listsGrid)">add</i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-
-    <!-- Grid 
+    <!-- Grid -->
     <div class="row" id="listsGrid">
-    </div>-->
+    </div>
 
-    <!-- Modal Trigger -->
-    <div id="modal1Button" class="fixed-action-btn">
+    <!-- Add button -->
+    <div class="fixed-action-btn" id="addNewListFab">
         <a class="btn-floating btn-large">
             <i class="large material-icons">add</i>
         </a>
-    </div>
-
-    <!-- Modal Structure -->
-    <div id="modal1" class="modal">
-        <div class="modal-content">
-            <h4>Modal Header</h4>
-            <p>A bunch of text</p>
-        </div>
-        <div class="modal-footer">
-            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat" id="modal1ButtonAgree">Agree</a>
-        </div>
-    </div>
-
-    <!-- Add button 
-    <button data-target="modal1" class="btn modal-trigger" id="addNewListFab">
-        <i class="large material-icons">add</i>
-    </button>-->
+    </div>  
     
-    <!-- Add area 
-    <div id="modal1" class="modal">
-        <div class="modal-contant">
-            <input type="text" id="addNewListText" maxlength="35" placeholder="Add new list..." onkeypress="ValidateListCreation(addNewListText.value, listsGrid, event)" />
-            <p>Graou!</p>
+    <!-- Debug clear button -->
+    <a class="btn-floating btn-large purple" onclick="Clear()">Clear</a>
+
+    <!-- Add list area -->
+    <div id="addNewList" class="modal" style="height:auto;">
+        <div class="modal-content" style="height:auto;">
+            <div class="row">
+                <div class="col s12">
+                    <input type="text" id="addNewListText" maxlength="35" placeholder="Add new list..." />
+                </div>
+            </div>
         </div>
-        <div class="modal-footer">
-            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+        <div class="modal-footer" style="height:auto;">
+            <div class="row">
+                <div class="col s6">
+                    <p id="addNewListError" style="color:red;"></p>
+                </div>
+                <div class="col s6">
+                    <button id="createNewList" class="waves-effect waves-green btn-flat" onclick="CreateList(addNewListText.value, listsGrid)">Create</button>
+                </div>
+            </div>
         </div>
-    </div>-->
+    </div>
+
+    <!-- Add element area -->
+    <div id="addNewElement" class="modal" style="height:auto;">
+        <div class="modal-content" style="height:auto;">
+            <div class="row">
+                <div class="col s12">
+                    <input type="text" id="addNewElementText" maxlength="35" placeholder="Add new list..." />
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="height:auto;">
+            <div class="row">
+                <div class="col s6">
+                    <p id="addNewElementError" style="color:red;"></p>
+                </div>
+                <div class="col s6">
+                    <button id="createNewElement" class="waves-effect waves-green btn-flat" onclick="AddElement(addNewElementText.value, addNewElementText)">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Debug -->
     <p id="debug"></p>
@@ -79,12 +77,9 @@
     <noscript>... no JS... ...wut?</noscript>
 
     <!-- jQuery -->    <!--Import jQuery before materialize.js-->
-    <script type="text/javascript" src="scripts/jquery-3.1.1.js"></script>
     <script type="text/javascript" src="scripts/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="jquery-ui-1.12.1.custom/jquery-ui.js"></script>
     <script type="text/javascript" src="jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
 
-    <script type="text/javascript" src="materialize/js/materialize.js"></script>
     <script type="text/javascript" src="materialize/js/materialize.min.js"></script>
 
     <!-- Cordova -->
@@ -101,20 +96,13 @@
 
         $(document).ready(function () {
             $('.modal').modal();
-            // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
-            $('.modal-trigger').leanModal();
         });
 
         //Open modal when FAB add is click
-        $("#modal1Button").click(function () {
-            $('#modal1').openModal();
-        });
-
-        //Close modal and call function to create eval
-        $("#modal1ButtonAgree").click(function () {
-            $('#modal1').closeModal();
-            //Autre code à executer quand je clique sur start
+        $("#addNewListFab").click(function () {
+            $('#addNewList').modal("open");
         });
     </script>
 </body>
+
 </html>

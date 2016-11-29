@@ -1,5 +1,7 @@
 ﻿var storage;
 
+var listToAddNewElement;
+
 // ***************************** //
 // **** Load/Save functions **** //
 // ***************************** //
@@ -26,27 +28,21 @@ function SaveGrid()
     storage.setItem("Grid", document.getElementById("listsGrid").innerHTML);
 }
 
+function Clear()
+{
+    storage.clear();
+    document.getElementById("listsGrid").innerHTML = "";
+}
+
 // ************************ //
 // **** Grid functions **** //
 // ************************ //
-
-function ValidateListCreation(_name, _grid, _event)
-{
-    // If "Enter" was pressed, then create the list
-    if(_event.keyCode == 13 && _name != "")
-    {
-        // reset the "Add" text 
-        document.getElementById("addNewListText").value = "";
-        
-        CreateList(_name, _grid);
-    }
-}
 
 function CreateList(_name, _grid)
 {    
     if (_name == "")
     {
-        window.alert("Oops! Write something first!");
+        document.getElementById("addNewListError").innerHTML = "Oops! Write something first!";
     }
     else if (_grid == null || _grid == undefined)
     {
@@ -54,30 +50,31 @@ function CreateList(_name, _grid)
     }
     else
     {
+        // reset the "Add" text 
+        document.getElementById("addNewListText").value = "";
+        document.getElementById("addNewListError").innerHTML = "";
+
         // number of lists in the grid
         var nbOfElements = _grid.getElementsByTagName("ul").length;
 
         // add list in the grid
         _grid.innerHTML +=
-		'<div class="col l4 m6 s12">' +
+        '<div class="col l4 m6 s12">' +
 		'	<div class="card-panel">' +
 		'		<div class="row">' +
-		'			<div class="col s11">' +
-		'				<h4>' + _name + '</h4>' +
-		'			</div>' +
-		'			<div class="col s1">' +
-		'				<a class="btn-floating red"><i class="material-icons" onclick="RemoveList(list' + (nbOfElements + 1) + ', ' + _grid.id + ')">delete</i></a>' +
-		'			</div>' +
+		'			<div class="col s12">' +
+		'		        <h4>' + _name + '</h4>' +
+		'		    </div>' +
 		'		</div>' +
 		'		<ul class="collection ui-sortable sortable" id="list' + (nbOfElements + 1) + '">' +
 		'		</ul>' +
 		'		<!-- Add area -->' +
 		'		<div class="row">' +
-		'			<div class="col s11">' +
-		'				<input type="text" id="list' + (nbOfElements + 1) + '_addText" maxlength="25" placeholder="Add new element..." />' +
+		'			<div class="col s6" id="list' + (nbOfElements + 1) + 'AddButtonCol">' +
+		'				<a class="waves-effect waves-light btn green" id="list' + (nbOfElements + 1) + 'AddButton" onclick="SetListToAddNewElement(list' + (nbOfElements + 1) + ')">Add</a>' +
 		'			</div>' +
-		'			<div class="col s1">' +
-		'				<a class="btn-floating"><i class="material-icons" onclick="AddElement(list' + (nbOfElements + 1) + '_addText.value, list' + (nbOfElements + 1) + ', list' + (nbOfElements + 1) + '_addText)">add</i></a>' +
+		'			<div class="col s6" id="list' + (nbOfElements + 1) + 'DeleteButtonCol">' +
+		'				<a class="waves-effect waves-light btn red" id="list' + (nbOfElements + 1) + 'DeleteButton" onclick="RemoveList(list' + (nbOfElements + 1) + ', ' + _grid.id + ')">Delete</a>' +
 		'			</div>' +
 		'		</div>' +
 		'	</div>' +
@@ -89,9 +86,9 @@ function CreateList(_name, _grid)
             }
         });
 
+        $('#addNewList').modal("close");
+
         SaveGrid();
-        
-        return document.getElementById("list" + (nbOfElements + 1));
     }
 }
 
@@ -103,6 +100,8 @@ function ReorganiseGrid(_grid)
     }
     else
     {
+        document.getElementById("debug").innerHTML = "";
+
         var gridChildrenNodes = _grid.childNodes;
 
         // Convert listsNodeList to an array
@@ -121,11 +120,15 @@ function ReorganiseGrid(_grid)
 
         for (i = 0; i < lists.length; i++)
         {
-            lists[i].getElementsByTagName("a")[0].innerHTML = '<i class="material-icons" onclick="RemoveList(list' + (i + 1) + ', ' + _grid.id + ')">delete</i>';
             lists[i].getElementsByTagName("ul")[0].id = 'list' + (i + 1);
-            lists[i].getElementsByTagName("input")[lists[i].getElementsByTagName("input").length - 1].id = 'list' + (i + 1) + '_addText';
-            lists[i].getElementsByTagName("a")[lists[i].getElementsByTagName("a").length - 1].innerHTML =
-				'<i class="material-icons" onclick="AddElement(list' + (i + 1) + '_addText.value, list' + (i + 1) + ', list' + (i + 1) + '_addText)">add</i>';
+
+            lists[i].getElementsByTagName("a")[0].parentNode.id = 'list' + (i + 1) + 'AddButtonCol';
+            lists[i].getElementsByTagName("a")[1].parentNode.id = 'list' + (i + 1) + 'RemoveButtonCol';
+
+            lists[i].getElementsByTagName("a")[0].parentNode.innerHTML =
+                '<a class="waves-effect waves-light btn green" id="list' + (i + 1) + 'AddButton" onclick="SetListToAddNewElement(list' + (i + 1) + ')">Add</a>';
+            lists[i].getElementsByTagName("a")[1].parentNode.innerHTML =
+                '<a class="waves-effect waves-light btn red" id="list' + (i + 1) + 'DeleteButton" onclick="RemoveList(list' + (i + 1) + ', ' + _grid.id + ')">Delete</a>';
 
             ReorganiseList(lists[i].getElementsByTagName("ul")[0]);
         }
@@ -138,13 +141,20 @@ function ReorganiseGrid(_grid)
 // **** List functions **** //
 // ************************ //
 
-function AddElement(_toAdd, _list, _textInput)
+function SetListToAddNewElement(_list)
+{
+    listToAddNewElement = _list;
+
+    $('#addNewElement').modal("open");
+}
+
+function AddElement(_toAdd, _textInput)
 {
     if (_toAdd == "")
     {
-        window.alert("Oops! Write something first!");
+        document.getElementById("addNewElementError").innerHTML = "Oops! Write something first!";
     }
-    else if (_list == null || _list == undefined)
+    else if (listToAddNewElement == null || listToAddNewElement == undefined)
     {
         window.alert("hum... the list doesn't exist...");
     }
@@ -152,17 +162,20 @@ function AddElement(_toAdd, _list, _textInput)
     {
         // reset the "Add" text 
         _textInput.value = "";
+        document.getElementById("addNewElementError").innerHTML = "";
 
         // number of elements in the list
-        var nbOfElements = _list.getElementsByTagName("li").length;
+        var nbOfElements = listToAddNewElement.getElementsByTagName("li").length;
 
         // add element in the list
-        _list.innerHTML +=
-		'<li class="collection-item ui-sortable-handle" id="' + _list.id + '_element' + (nbOfElements + 1) + '" >' +
-		'	<input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '">' +
-		'	<label for="' + _list.id + '_check' + (nbOfElements + 1) + '">' + _toAdd + '</label> ' +
-		'	<a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (nbOfElements + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>' +
+        listToAddNewElement.innerHTML +=
+		'<li class="collection-item ui-sortable-handle" id="' + listToAddNewElement.id + '_element' + (nbOfElements + 1) + '" >' +
+		'	<input type="checkbox" class="filled-in" id="' + listToAddNewElement.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '">' +
+		'	<label for="' + listToAddNewElement.id + '_check' + (nbOfElements + 1) + '">' + _toAdd + '</label> ' +
+		'	<a href="#!" class="secondary-content" onclick="EraseElement(' + listToAddNewElement.id + '_element' + (nbOfElements + 1) + ', ' + listToAddNewElement.id + ')"><i class="material-icons">delete</i></a>' +
 		'</li>';
+
+        $('#addNewElement').modal("close");
 
         SaveGrid();
     }
