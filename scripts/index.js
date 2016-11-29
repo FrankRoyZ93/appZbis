@@ -2,6 +2,8 @@
 
 var listToAddNewElement;
 
+var listToRemove;
+
 // ***************************** //
 // **** Load/Save functions **** //
 // ***************************** //
@@ -74,7 +76,7 @@ function CreateList(_name, _grid)
 		'				<a class="waves-effect waves-light btn green" id="list' + (nbOfElements + 1) + 'AddButton" onclick="SetListToAddNewElement(list' + (nbOfElements + 1) + ')">Add</a>' +
 		'			</div>' +
 		'			<div class="col s6" id="list' + (nbOfElements + 1) + 'DeleteButtonCol">' +
-		'				<a class="waves-effect waves-light btn red" id="list' + (nbOfElements + 1) + 'DeleteButton" onclick="RemoveList(list' + (nbOfElements + 1) + ', ' + _grid.id + ')">Delete</a>' +
+		'				<a class="waves-effect waves-light btn red" id="list' + (nbOfElements + 1) + 'DeleteButton" onclick="SetListToRemove(list' + (nbOfElements + 1) + ')">Delete</a>' +
 		'			</div>' +
 		'		</div>' +
 		'	</div>' +
@@ -100,8 +102,6 @@ function ReorganiseGrid(_grid)
     }
     else
     {
-        document.getElementById("debug").innerHTML = "";
-
         var gridChildrenNodes = _grid.childNodes;
 
         // Convert listsNodeList to an array
@@ -128,7 +128,7 @@ function ReorganiseGrid(_grid)
             lists[i].getElementsByTagName("a")[0].parentNode.innerHTML =
                 '<a class="waves-effect waves-light btn green" id="list' + (i + 1) + 'AddButton" onclick="SetListToAddNewElement(list' + (i + 1) + ')">Add</a>';
             lists[i].getElementsByTagName("a")[1].parentNode.innerHTML =
-                '<a class="waves-effect waves-light btn red" id="list' + (i + 1) + 'DeleteButton" onclick="RemoveList(list' + (i + 1) + ', ' + _grid.id + ')">Delete</a>';
+                '<a class="waves-effect waves-light btn red" id="list' + (i + 1) + 'DeleteButton" onclick="SetListToRemove(list' + (i + 1) + ')">Delete</a>';
 
             ReorganiseList(lists[i].getElementsByTagName("ul")[0]);
         }
@@ -146,6 +146,14 @@ function SetListToAddNewElement(_list)
     listToAddNewElement = _list;
 
     $('#addNewElement').modal("open");
+}
+
+function SetListToRemove(_list)
+{
+    listToRemove = _list;
+    document.getElementById("removeListText").innerHTML = "Are you sure you want to remove " + _list.parentNode.getElementsByTagName("h4")[0].innerHTML + "?";
+
+    $('#removeList').modal("open");
 }
 
 function AddElement(_toAdd, _textInput)
@@ -176,6 +184,8 @@ function AddElement(_toAdd, _textInput)
 		'</li>';
 
         $('#addNewElement').modal("close");
+        
+        listToAddNewElement = null;
 
         SaveGrid();
     }
@@ -229,9 +239,9 @@ function ReorganiseList(_list)
     SaveGrid();
 }
 
-function RemoveList(_list, _grid)
+function RemoveList(_grid)
 {
-    if (_list == null || _list == undefined)
+    if (listToRemove == null || listToRemove == undefined)
     {
         window.alert("Alert! This list doesn't exist anymore!");
     }
@@ -246,12 +256,18 @@ function RemoveList(_list, _grid)
         // We will now check in the grid where '_list' is located		
         for (i = 0; i < lists.length; i++)
         {
-            if (lists[i] == _list)
+            if (lists[i] == listToRemove)
             {
                 lists[i].parentNode.parentNode.parentNode.removeChild(lists[i].parentNode.parentNode);
                 break;
             }
         }
+
+        document.getElementById("removeListText").innerHTML = "";
+
+        listToRemove = null;
+
+        $('#removeList').modal("close");
 
         ReorganiseGrid(_grid);
     }

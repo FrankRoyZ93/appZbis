@@ -19,16 +19,18 @@
     </div>
 
     <!-- Add button -->
-    <div class="fixed-action-btn" id="addNewListFab">
+    <div class="fixed-action-btn">
         <a class="btn-floating btn-large">
-            <i class="large material-icons">add</i>
+            <i class="large material-icons">menu</i>
         </a>
-    </div>  
-    
-    <!-- Debug clear button -->
-    <a class="btn-floating btn-large purple" onclick="Clear()">Clear</a>
+        <ul>
+            <li><a class="btn-floating green" id="addNewListFab"><i class="large material-icons">add</i></a></li>
+            <li><a class="btn-floating red" id="clearAllListsFab"><i class="large material-icons">delete_forever</i></a></li>
+            <li><a class="btn-floating purple"><i class="large material-icons">file_download</i></a></li>
+        </ul>
+    </div>
 
-    <!-- Add list area -->
+    <!-- Add list modal -->
     <div id="addNewList" class="modal" style="height:auto;">
         <div class="modal-content" style="height:auto;">
             <div class="row">
@@ -49,7 +51,7 @@
         </div>
     </div>
 
-    <!-- Add element area -->
+    <!-- Add element modal -->
     <div id="addNewElement" class="modal" style="height:auto;">
         <div class="modal-content" style="height:auto;">
             <div class="row">
@@ -67,6 +69,36 @@
                     <button id="createNewElement" class="waves-effect waves-green btn-flat" onclick="AddElement(addNewElementText.value, addNewElementText)">Create</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Remove list modal -->
+    <div id="removeList" class="modal" style="height:auto;">
+        <div class="modal-content" style="height:auto;">
+            <div class="row">
+                <div class="col s12">
+                    <p id="removeListText"></p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="height:auto;">
+            <button class="waves-effect waves-green btn-flat" onclick="RemoveList(listsGrid)">Yes</button>
+            <button class="modal-action modal-close waves-effect waves-green btn-flat">No</button>
+        </div>
+    </div>   
+    
+    <!-- Clear grid modal -->
+    <div id="removeAllList" class="modal" style="height:auto;">
+        <div class="modal-content" style="height:auto;">
+            <div class="row">
+                <div class="col s12">
+                    <p id="removeAllListText">Are you sure you want to erase all lists?</p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="height:auto;">
+            <button class="waves-effect waves-green btn-flat" id="removeAllListYes" onclick="Clear()">Yes</button>
+            <button class="modal-action modal-close waves-effect waves-green btn-flat">No</button>
         </div>
     </div>
 
@@ -101,6 +133,14 @@
         //Open modal when FAB add is click
         $("#addNewListFab").click(function () {
             $('#addNewList').modal("open");
+        });
+
+        $("#clearAllListsFab").click(function () {
+            $('#removeAllList').modal("open");
+        });
+
+        $("#removeAllListYes").click(function () {
+            $('#removeAllList').modal("close");
         });
     </script>
 </body>

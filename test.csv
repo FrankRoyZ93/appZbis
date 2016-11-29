@@ -1,0 +1,30 @@
+﻿{
+	"database":
+	[
+		{
+			"My List" :
+			[
+				{
+					"name" : "Paul Auchon"
+				},
+				{
+					"name" : "Oscar De Brie"
+				}
+			]
+		},
+		{
+			"Another List" :
+			[
+				{
+					"name" : "Oscar De Brie"
+				},
+				{
+					"name" : "Harry Cover"
+				},
+				{
+					"name" : "Marc De Café"
+				}
+			]
+		}
+	]
+}
