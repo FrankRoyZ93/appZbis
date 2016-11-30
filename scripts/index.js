@@ -36,6 +36,35 @@ function Clear()
     document.getElementById("listsGrid").innerHTML = "";
 }
 
+// ********************************* //
+// **** Import/Export functions **** //
+// ********************************* //
+
+function Import(_file)
+{
+    var reader = new FileReader();
+    
+    reader.onloadend = function (e) {
+        var listsToLoad = reader.result;
+
+        var obj = JSON.parse(listsToLoad);
+
+        var grid = document.getElementById("listsGrid");
+
+        for (i = 0; i < obj.lists.length; i++)
+        {
+            var newList = CreateList(obj.lists[i].name, grid);
+
+            for (j = 0; j < obj.lists[i].list.length; j++)
+            {
+                AddNewElement(obj.lists[i].list[j].name, newList);
+            }
+        }
+    }
+
+    reader.readAsText(_file);
+}
+
 // ************************ //
 // **** Grid functions **** //
 // ************************ //
@@ -91,6 +120,8 @@ function CreateList(_name, _grid)
         $('#addNewList').modal("close");
 
         SaveGrid();
+        
+        return document.getElementById("list" + (nbOfElements + 1));
     }
 }
 
@@ -122,12 +153,14 @@ function ReorganiseGrid(_grid)
         {
             lists[i].getElementsByTagName("ul")[0].id = 'list' + (i + 1);
 
-            lists[i].getElementsByTagName("a")[0].parentNode.id = 'list' + (i + 1) + 'AddButtonCol';
-            lists[i].getElementsByTagName("a")[1].parentNode.id = 'list' + (i + 1) + 'RemoveButtonCol';
+            var arrayOfA = lists[i].getElementsByTagName("a");
+            
+            arrayOfA[arrayOfA.length - 2].parentNode.id = 'list' + (i + 1) + 'AddButtonCol';
+            arrayOfA[arrayOfA.length - 1].parentNode.id = 'list' + (i + 1) + 'RemoveButtonCol';
 
-            lists[i].getElementsByTagName("a")[0].parentNode.innerHTML =
+            arrayOfA[arrayOfA.length - 2].parentNode.innerHTML =
                 '<a class="waves-effect waves-light btn green" id="list' + (i + 1) + 'AddButton" onclick="SetListToAddNewElement(list' + (i + 1) + ')">Add</a>';
-            lists[i].getElementsByTagName("a")[1].parentNode.innerHTML =
+            arrayOfA[arrayOfA.length - 1].parentNode.innerHTML =
                 '<a class="waves-effect waves-light btn red" id="list' + (i + 1) + 'DeleteButton" onclick="SetListToRemove(list' + (i + 1) + ')">Delete</a>';
 
             ReorganiseList(lists[i].getElementsByTagName("ul")[0]);
@@ -186,6 +219,29 @@ function AddElement(_toAdd, _textInput)
         $('#addNewElement').modal("close");
         
         listToAddNewElement = null;
+
+        SaveGrid();
+    }
+}
+
+function AddNewElement(_toAdd, _list)
+{
+    if (_list == null || _list == undefined)
+    {
+        window.alert("hum... the list doesn't exist...");
+    }
+    else 
+    {
+        // number of elements in the list
+        var nbOfElements = _list.getElementsByTagName("li").length;
+
+        // add element in the list
+        _list.innerHTML +=
+		'<li class="collection-item ui-sortable-handle" id="' + _list.id + '_element' + (nbOfElements + 1) + '" >' +
+		'	<input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '">' +
+		'	<label for="' + _list.id + '_check' + (nbOfElements + 1) + '">' + _toAdd + '</label> ' +
+		'	<a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (nbOfElements + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>' +
+		'</li>';
 
         SaveGrid();
     }
