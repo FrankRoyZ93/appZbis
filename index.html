@@ -27,6 +27,7 @@
             <li><a class="btn-floating green" id="addNewListFab"><i class="large material-icons">add</i></a></li>
             <li><a class="btn-floating red" id="clearAllListsFab"><i class="large material-icons">delete_forever</i></a></li>
             <li><a class="btn-floating purple" id="importFab"><i class="large material-icons">file_upload</i></a></li>
+            <li><a class="btn-floating blue" id="exportFab"><i class="large material-icons">file_download</i></a></li>
         </ul>
     </div>
 
@@ -123,6 +124,20 @@
             <button class="btn waves-effect waves-light" id="importFileButton" onclick="Import(fileToImport.files[0])">Import</button>
         </div>
     </div>
+    
+    <!-- Export modal -->
+    <div id="exportFile" class="modal" style="height:auto;">
+        <div class="modal-content" style="height:auto;">
+            <div class="row">
+                <div class="col s12">
+                    <input type="text" id="fileToExportName" placeholder="Enter a name...">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer" style="height:auto;">
+            <button class="btn waves-effect waves-light" id="exportFileButton" onclick="Export(fileToExportName.value)">Export</button>
+        </div>
+    </div>
 
     <!-- Debug -->
     <p id="debug"></p>
@@ -169,9 +184,18 @@
             $('#importFile').modal("open");
         });
 
+        $("#exportFab").click(function () {
+            $('#exportFile').modal("open");
+        });
+
         //import button
         $("#importFileButton").click(function () {
             $('#importFile').modal("close");
+        });
+
+        //export button
+        $("#exportFileButton").click(function () {
+            $('#exportFile').modal("close");
         });
     </script>
 </body>

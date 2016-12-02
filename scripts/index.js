@@ -65,6 +65,60 @@ function Import(_file)
     reader.readAsText(_file);
 }
 
+function Export(_Name)
+{
+    var element = document.createElement('a');
+    var data = CreateCSV();
+    var fileName = _Name + ".csv";
+
+    /*window.alert(data);
+    window.alert(encodeURI(data));*/
+
+    element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURI(data));
+    element.setAttribute('download', fileName);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
+
+function CreateCSV()
+{
+    var resultCSV = '{ "lists" : [ ';
+
+    var lists = document.getElementById("listsGrid").getElementsByTagName("ul");
+
+    for (i = 0; i < lists.length; i++)
+    {
+        resultCSV += '{ "name" : "' + lists[i].parentNode.getElementsByTagName("h4")[0].innerHTML + '", "list" : [ ';
+
+        var list = lists[i].getElementsByTagName("li");
+
+        for (j = 0; j < list.length; j++)
+        {
+            resultCSV += '{ "name" : "' + list[j].getElementsByTagName("label")[0].innerHTML + '"}';
+            if(j + 1 < list.length)
+            {
+                resultCSV += ', ';
+            }
+        }
+
+        resultCSV += ' ] }';
+
+        if (i + 1 < lists.length)
+        {
+            resultCSV += ', ';
+        }
+    }
+
+    resultCSV += ' ] }';
+
+    return resultCSV;
+}
+
 // ************************ //
 // **** Grid functions **** //
 // ************************ //
