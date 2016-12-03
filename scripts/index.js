@@ -4,6 +4,8 @@ var listToAddNewElement;
 
 var listToRemove;
 
+var language;
+
 // ***************************** //
 // **** Load/Save functions **** //
 // ***************************** //
@@ -23,6 +25,8 @@ function Load()
             ReorganiseList(document.getElementById($(".sortable").attr("id")));
         }
     });
+
+    CheckLanguage();
 }
 
 function SaveGrid()
@@ -212,8 +216,11 @@ function ReorganiseGrid(_grid)
         {
             lists[i].getElementsByTagName("ul")[0].id = 'list' + (i + 1);
 
-            lists[i].getElementsByTagName("h4")[0].id = 'list' + (i + 1) + 'Name';
-            lists[i].getElementsByTagName("input")[0].id = 'list' + (i + 1) + 'ChangeTitle';
+            var listName = lists[i].getElementsByTagName("h4")[0].innerHTML;
+
+            lists[i].getElementsByTagName("h4")[0].parentNode =
+                '<h4 id="list' + (i + 1) + 'Name" onclick="EnterNewTitle(list' + (i + 1) + 'Name, list' + (i + 1) + 'ChangeTitle)">' + listName + '</h4>' +
+		        '<input id="list' + (i + 1) + 'ChangeTitle" type="text" onblur="ChangeTitle(list' + (i + 1) + 'Name, list' + (i + 1) + 'ChangeTitle)" />';
 
             var arrayOfA = lists[i].getElementsByTagName("a");
             
@@ -408,4 +415,55 @@ function RemoveList(_grid)
 
         ReorganiseGrid(_grid);
     }
+}
+
+// **************************** //
+// **** Language functions **** //
+// **************************** //
+
+function CheckLanguage()
+{
+    var language = navigator.language;
+
+    switch (language)
+    {
+        case fr:
+            ChangeToBaguette();
+            break;
+        default:
+            // keep it rosbeef
+    }
+}
+
+function ChangeToBaguette()
+{
+    // Modal //
+    //Add list modal
+    document.getElementById("addNewListText").placeholder = "Ajouter une nouvelle list...";
+    document.getElementById("createNewList").innerHTML = "Créer";
+
+    //Add element modal
+    document.getElementById("addNewElementText").placeholder = "Ajouter un nouvel élément à cette list...";
+    document.getElementById("createNewElement").innerHTML = "Créer";
+
+    //Remove list modal
+    document.getElementById("RemoveListYesButton").innerHTML = "Oui";
+    document.getElementById("RemoveListNoButton").innerHTML = "Non";
+
+    //Clear grid modal
+    document.getElementById("removeAllListText").innerHTML = "Etes-vous sur de vouloir effacer toutes les listes?";
+    document.getElementById("removeAllListYes").innerHTML = "Oui";
+    document.getElementById("removeAllListNo").innerHTML = "Non";
+
+    //Import modal
+    document.getElementById("importFileSpan").innerHTML = "Fichier";
+    document.getElementById("fileToImportText").placeholder = "Séléctionner un fichier .csv d'où importer des listes";
+    document.getElementById("importFileButton").innerHTML = "Importer";
+
+    //Export modal
+    document.getElementById("fileToExportName").placeholder = "Entrer un nom de fichier...";
+    document.getElementById("exportFileButton").innerHTML = "Exporter";
+
+    // List //
+
 }
