@@ -148,7 +148,8 @@ function CreateList(_name, _grid)
 		'	<div class="card-panel">' +
 		'		<div class="row">' +
 		'			<div class="col s12">' +
-		'		        <h4>' + _name + '</h4>' +
+		'		        <h4 id="list' + (nbOfElements + 1) + 'Name" onclick="EnterNewTitle(list' + (nbOfElements + 1) + 'Name, list' + (nbOfElements + 1) + 'ChangeTitle)">' + _name + '</h4>' +
+		'		        <input id="list' + (nbOfElements + 1) + 'ChangeTitle" type="text" onblur="ChangeTitle(list' + (nbOfElements + 1) + 'Name, list' + (nbOfElements + 1) + 'ChangeTitle)" />' +
 		'		    </div>' +
 		'		</div>' +
 		'		<ul class="collection ui-sortable sortable" id="list' + (nbOfElements + 1) + '">' +
@@ -165,12 +166,16 @@ function CreateList(_name, _grid)
 		'	</div>' +
 		'</div>';
 
+        // make the elements of the list sortable
         $(".sortable").sortable({
             stop: function (event, ui) {
                 ReorganiseList(document.getElementById($(".sortable").attr("id")));
             }
         });
 
+        // hide the title changer field
+        $("#list" + (nbOfElements + 1) + "ChangeTitle").hide();
+        
         $('#addNewList').modal("close");
 
         SaveGrid();
@@ -207,6 +212,9 @@ function ReorganiseGrid(_grid)
         {
             lists[i].getElementsByTagName("ul")[0].id = 'list' + (i + 1);
 
+            lists[i].getElementsByTagName("h4")[0].id = 'list' + (i + 1) + 'Name';
+            lists[i].getElementsByTagName("input")[0].id = 'list' + (i + 1) + 'ChangeTitle';
+
             var arrayOfA = lists[i].getElementsByTagName("a");
             
             arrayOfA[arrayOfA.length - 2].parentNode.id = 'list' + (i + 1) + 'AddButtonCol';
@@ -241,6 +249,25 @@ function SetListToRemove(_list)
     document.getElementById("removeListText").innerHTML = "Are you sure you want to remove " + _list.parentNode.getElementsByTagName("h4")[0].innerHTML + "?";
 
     $('#removeList').modal("open");
+}
+
+function EnterNewTitle(_NameElement, _NameInput)
+{
+    $("#" + _NameElement.id).hide();
+    $("#" + _NameInput.id).show();
+
+    _NameInput.value = _NameElement.innerHTML;
+    _NameInput.focus();
+}
+
+function ChangeTitle(_NameElement, _NameInput)
+{
+    _NameElement.innerHTML = _NameInput.value;
+
+    $("#" + _NameElement.id).show();
+    $("#" + _NameInput.id).hide();
+
+    SaveGrid();
 }
 
 function AddElement(_toAdd, _textInput)
