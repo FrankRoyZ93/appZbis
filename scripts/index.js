@@ -130,7 +130,7 @@ function CreateList(_name, _grid)
     {
         switch (language)
         {
-            case fr:
+            case "fr":
                 document.getElementById("addNewListError").innerHTML = "Oups! Ecris quelque chose d'abord!";
                 break;
             default:
@@ -152,7 +152,7 @@ function CreateList(_name, _grid)
 
         // add list in the grid
         _grid.innerHTML +=
-        '<div class="col l4 m6 s12">' +
+        '<div class="col l4 m6 s12 AppZbisRDV_List">' +
 		'	<div class="card-panel">' +
 		'		<div class="row">' +
 		'			<div class="col s12">' +
@@ -163,16 +163,28 @@ function CreateList(_name, _grid)
 		'		<ul class="collection ui-sortable sortable" id="list' + (nbOfElements + 1) + '">' +
 		'		</ul>' +
 		'		<!-- Add area -->' +
-		'		<div class="row">' +
-		'			<div class="col s6" id="list' + (nbOfElements + 1) + 'AddButtonCol">' +
-		'				<a class="waves-effect waves-light btn green" id="list' + (nbOfElements + 1) + 'AddButton" onclick="SetListToAddNewElement(list' + (nbOfElements + 1) + ')">Add</a>' +
-		'			</div>' +
-		'			<div class="col s6" id="list' + (nbOfElements + 1) + 'DeleteButtonCol">' +
-		'				<a class="waves-effect waves-light btn red" id="list' + (nbOfElements + 1) + 'DeleteButton" onclick="SetListToRemove(list' + (nbOfElements + 1) + ')">Delete</a>' +
-		'			</div>' +
+		'		<div class="row">' +  
+        '			<div class="col s6" id="list' + (nbOfElements + 1) + 'AddButtonCol">' +
+        '				<a class="waves-effect waves-light btn green" id="list' + (nbOfElements + 1) + 'AddButton" onclick="SetListToAddNewElement(list' + (nbOfElements + 1) + ')">Add</a>' +
+        '			</div>' +
+        '			<div class="col s6" id="list' + (nbOfElements + 1) + 'DeleteButtonCol">' +
+        '				<a class="waves-effect waves-light btn red" id="list' + (nbOfElements + 1) + 'DeleteButton" onclick="SetListToRemove(list' + (nbOfElements + 1) + ')">Delete</a>' +
+        '			</div>' +	
 		'		</div>' +
 		'	</div>' +
 		'</div>';
+
+        switch (language)
+        {
+            case "fr":
+                var arrayOfA = document.getElementById("list" + (nbOfElements + 1)).parentNode.getElementsByTagName("a");
+
+                arrayOfA[arrayOfA.length - 2].innerHTML = 'Ajouter';
+                arrayOfA[arrayOfA.length - 1].innerHTML = 'Supprimer';
+
+                break;
+            default:
+        }
 
         // make the elements of the list sortable
         $(".sortable").sortable({
@@ -231,10 +243,20 @@ function ReorganiseGrid(_grid)
             arrayOfA[arrayOfA.length - 2].parentNode.id = 'list' + (i + 1) + 'AddButtonCol';
             arrayOfA[arrayOfA.length - 1].parentNode.id = 'list' + (i + 1) + 'RemoveButtonCol';
 
-            arrayOfA[arrayOfA.length - 2].parentNode.innerHTML =
-                '<a class="waves-effect waves-light btn green" id="list' + (i + 1) + 'AddButton" onclick="SetListToAddNewElement(list' + (i + 1) + ')">Add</a>';
-            arrayOfA[arrayOfA.length - 1].parentNode.innerHTML =
-                '<a class="waves-effect waves-light btn red" id="list' + (i + 1) + 'DeleteButton" onclick="SetListToRemove(list' + (i + 1) + ')">Delete</a>';
+            switch (language)
+            {
+                case "fr":
+                    arrayOfA[arrayOfA.length - 2].parentNode.innerHTML =
+                        '<a class="waves-effect waves-light btn green" id="list' + (i + 1) + 'AddButton" onclick="SetListToAddNewElement(list' + (i + 1) + ')">Ajouter</a>';
+                    arrayOfA[arrayOfA.length - 1].parentNode.innerHTML =
+                        '<a class="waves-effect waves-light btn red" id="list' + (i + 1) + 'DeleteButton" onclick="SetListToRemove(list' + (i + 1) + ')">Supprimer</a>';
+                    break;
+                default:
+                    arrayOfA[arrayOfA.length - 2].parentNode.innerHTML =
+                        '<a class="waves-effect waves-light btn green" id="list' + (i + 1) + 'AddButton" onclick="SetListToAddNewElement(list' + (i + 1) + ')">Add</a>';
+                    arrayOfA[arrayOfA.length - 1].parentNode.innerHTML =
+                        '<a class="waves-effect waves-light btn red" id="list' + (i + 1) + 'DeleteButton" onclick="SetListToRemove(list' + (i + 1) + ')">Delete</a>';
+            }
 
             ReorganiseList(lists[i].getElementsByTagName("ul")[0]);
         }
@@ -287,7 +309,7 @@ function AddElement(_toAdd, _textInput)
     {
         switch (language)
         {
-            case fr:
+            case "fr":
                 document.getElementById("addNewElementError").innerHTML = "Oups! Ecris quelque chose d'abord!";
                 break;
             default:
@@ -441,15 +463,15 @@ function RemoveList(_grid)
 
 function CheckLanguage()
 {
-    var language = navigator.language;
+    language = navigator.language || navigator.userLanguage;
 
     switch (language)
     {
-        case fr:
+        case "fr":
             ChangeToBaguette();
             break;
         default:
-            // keep it rosbeef
+            ChangeToRosbeef();
     }
 }
 
@@ -457,11 +479,11 @@ function ChangeToBaguette()
 {
     // Modal //
     //Add list modal
-    document.getElementById("addNewListText").placeholder = "Ajouter une nouvelle list...";
+    document.getElementById("addNewListText").placeholder = "Ajouter une nouvelle liste...";
     document.getElementById("createNewList").innerHTML = "Créer";
 
     //Add element modal
-    document.getElementById("addNewElementText").placeholder = "Ajouter un nouvel élément à cette list...";
+    document.getElementById("addNewElementText").placeholder = "Ajouter un nouvel élément à cette liste...";
     document.getElementById("createNewElement").innerHTML = "Créer";
 
     //Remove list modal
@@ -483,5 +505,26 @@ function ChangeToBaguette()
     document.getElementById("exportFileButton").innerHTML = "Exporter";
 
     // List //
+    var lists = document.getElementsByClassName("AppZbisRDV_List");
 
+    for (i = 0; i < lists.length; i++)
+    {
+        var arrayOfA = lists[i].getElementsByTagName("a");
+
+        arrayOfA[arrayOfA.length - 2].innerHTML = 'Ajouter';
+        arrayOfA[arrayOfA.length - 1].innerHTML = 'Supprimer';
+    }
+}
+
+function ChangeToRosbeef()
+{
+    // List //
+    var lists = document.getElementsByClassName("AppZbisRDV_List");
+
+    for (i = 0; i < lists.length; i++) {
+        var arrayOfA = lists[i].getElementsByTagName("a");
+
+        arrayOfA[arrayOfA.length - 2].innerHTML = 'Add';
+        arrayOfA[arrayOfA.length - 1].innerHTML = 'Delete';
+    }
 }
