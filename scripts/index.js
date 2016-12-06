@@ -75,9 +75,6 @@ function Export(_Name)
     var data = CreateCSV();
     var fileName = _Name + ".csv";
 
-    /*window.alert(data);
-    window.alert(encodeURI(data));*/
-
     element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURI(data));
     element.setAttribute('download', fileName);
 
@@ -131,7 +128,14 @@ function CreateList(_name, _grid)
 {    
     if (_name == "")
     {
-        document.getElementById("addNewListError").innerHTML = "Oops! Write something first!";
+        switch (language)
+        {
+            case fr:
+                document.getElementById("addNewListError").innerHTML = "Oups! Ecris quelque chose d'abord!";
+                break;
+            default:
+                document.getElementById("addNewListError").innerHTML = "Oops! Write something first!";
+        }
     }
     else if (_grid == null || _grid == undefined)
     {
@@ -281,7 +285,14 @@ function AddElement(_toAdd, _textInput)
 {
     if (_toAdd == "")
     {
-        document.getElementById("addNewElementError").innerHTML = "Oops! Write something first!";
+        switch (language)
+        {
+            case fr:
+                document.getElementById("addNewElementError").innerHTML = "Oups! Ecris quelque chose d'abord!";
+                break;
+            default:
+                document.getElementById("addNewElementError").innerHTML = "Oops! Write something first!";
+        }
     }
     else if (listToAddNewElement == null || listToAddNewElement == undefined)
     {
@@ -367,6 +378,8 @@ function ReorganiseList(_list)
 {
     var elementsNodeList = _list.getElementsByTagName("li");
 
+    document.getElementById("debug").innerHTML = "";
+
     // Convert elementsNodeList to an array
     var elements = [];
     for (var i = elementsNodeList.length; i--; elements.unshift(elementsNodeList[i]));
@@ -374,10 +387,15 @@ function ReorganiseList(_list)
     for (i = 0; i < elements.length; i++)
     {
         elements[i].id = _list.id + "_element" + (i + 1);
+
+        var isChecked = elements[i].getElementsByTagName("input")[0].checked;
+
         elements[i].innerHTML =
 		'	<input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (i + 1) + '" value="' + elements[i].getElementsByTagName("input")[0].value + '">' +
 		'	<label for="' + _list.id + '_check' + (i + 1) + '">' + elements[i].getElementsByTagName("input")[0].value + '</label> ' +
 		'	<a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (i + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>';
+
+        elements[i].getElementsByTagName("input")[0].checked = isChecked;
     }
 
     SaveGrid();
