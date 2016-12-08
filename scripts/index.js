@@ -1,10 +1,21 @@
-﻿var storage;
+﻿//// Local Variables ////
 
-var listToAddNewElement;
+// Local storage
+var V_Storage;
 
-var listToRemove;
+// Grid
+var V_Grid;
 
-var language;
+// Temporary variable to add a new element to a list
+var V_ListToAddNewElement;
+
+// Temporary variable to remove a list
+var V_ListToRemove;
+
+// Language of the browser
+var V_Language;
+
+//// Fucntions ////
 
 // ***************************** //
 // **** Load/Save functions **** //
@@ -12,12 +23,14 @@ var language;
 
 function Load()
 {
-    storage = window.localStorage;
+    V_Storage = window.localStorage;
+    var grid = V_Storage.getItem("Grid");
 
-    var grid = storage.getItem("Grid");
+    V_Grid = document.getElementById("listsGrid");
+
     if(grid != "" || grid != undefined)
     {
-        document.getElementById("listsGrid").innerHTML = grid;
+        V_Grid.innerHTML = grid;
     }
 
     $(".sortable").sortable({
@@ -31,13 +44,14 @@ function Load()
 
 function SaveGrid()
 {
-    storage.setItem("Grid", document.getElementById("listsGrid").innerHTML);
+    V_Grid = document.getElementById("listsGrid");
+    V_Storage.setItem("Grid", V_Grid.innerHTML);
 }
 
 function Clear()
 {
-    storage.clear();
-    document.getElementById("listsGrid").innerHTML = "";
+    V_Storage.clear();
+    V_Grid.innerHTML = "";
 }
 
 // ********************************* //
@@ -52,12 +66,10 @@ function Import(_file)
         var listsToLoad = reader.result;
 
         var obj = JSON.parse(listsToLoad);
-
-        var grid = document.getElementById("listsGrid");
-
+        
         for (i = 0; i < obj.lists.length; i++)
         {
-            var newList = CreateList(obj.lists[i].name, grid);
+            var newList = CreateList(obj.lists[i].name);
 
             for (j = 0; j < obj.lists[i].list.length; j++)
             {
@@ -90,7 +102,7 @@ function CreateCSV()
 {
     var resultCSV = '{ "lists" : [ ';
 
-    var lists = document.getElementById("listsGrid").getElementsByTagName("ul");
+    var lists = V_Grid.getElementsByTagName("ul");
 
     for (i = 0; i < lists.length; i++)
     {
@@ -124,11 +136,11 @@ function CreateCSV()
 // **** Grid functions **** //
 // ************************ //
 
-function CreateList(_name, _grid)
+function CreateList(_name)
 {    
     if (_name == "")
     {
-        switch (language)
+        switch (V_Language)
         {
             case "fr":
                 document.getElementById("addNewListError").innerHTML = "Oups! Ecris quelque chose d'abord!";
@@ -137,7 +149,7 @@ function CreateList(_name, _grid)
                 document.getElementById("addNewListError").innerHTML = "Oops! Write something first!";
         }
     }
-    else if (_grid == null || _grid == undefined)
+    else if (V_Grid == null || V_Grid == undefined)
     {
         window.alert("hum... the grid doesn't exist...");
     }
@@ -148,10 +160,10 @@ function CreateList(_name, _grid)
         document.getElementById("addNewListError").innerHTML = "";
 
         // number of lists in the grid
-        var nbOfElements = _grid.getElementsByTagName("ul").length;
+        var nbOfElements = V_Grid.getElementsByTagName("ul").length;
 
         // add list in the grid
-        _grid.innerHTML +=
+        V_Grid.innerHTML +=
         '<div class="col l4 m6 s12 AppZbisRDV_List">' +
 		'	<div class="card-panel">' +
 		'		<div class="row">' +
@@ -174,7 +186,7 @@ function CreateList(_name, _grid)
 		'	</div>' +
 		'</div>';
 
-        switch (language)
+        switch (V_Language)
         {
             case "fr":
                 var arrayOfA = document.getElementById("list" + (nbOfElements + 1)).parentNode.getElementsByTagName("a");
@@ -204,15 +216,15 @@ function CreateList(_name, _grid)
     }
 }
 
-function ReorganiseGrid(_grid)
+function ReorganiseGrid()
 {
-    if (_grid == null || _grid == undefined)
+    if (V_Grid == null || V_Grid == undefined)
     {
         window.alert("hum... the grid doesn't exist...");
     }
     else
     {
-        var gridChildrenNodes = _grid.childNodes;
+        var gridChildrenNodes = V_Grid.childNodes;
 
         // Convert listsNodeList to an array
         var childrenNodes = [];
@@ -243,7 +255,7 @@ function ReorganiseGrid(_grid)
             arrayOfA[arrayOfA.length - 2].parentNode.id = 'list' + (i + 1) + 'AddButtonCol';
             arrayOfA[arrayOfA.length - 1].parentNode.id = 'list' + (i + 1) + 'RemoveButtonCol';
 
-            switch (language)
+            switch (V_Language)
             {
                 case "fr":
                     arrayOfA[arrayOfA.length - 2].parentNode.innerHTML =
@@ -271,14 +283,14 @@ function ReorganiseGrid(_grid)
 
 function SetListToAddNewElement(_list)
 {
-    listToAddNewElement = _list;
+    V_ListToAddNewElement = _list;
 
     $('#addNewElement').modal("open");
 }
 
 function SetListToRemove(_list)
 {
-    listToRemove = _list;
+    V_ListToRemove = _list;
     document.getElementById("removeListText").innerHTML = "Are you sure you want to remove " + _list.parentNode.getElementsByTagName("h4")[0].innerHTML + "?";
 
     $('#removeList').modal("open");
@@ -307,7 +319,7 @@ function AddElement(_toAdd, _textInput)
 {
     if (_toAdd == "")
     {
-        switch (language)
+        switch (V_Language)
         {
             case "fr":
                 document.getElementById("addNewElementError").innerHTML = "Oups! Ecris quelque chose d'abord!";
@@ -316,7 +328,7 @@ function AddElement(_toAdd, _textInput)
                 document.getElementById("addNewElementError").innerHTML = "Oops! Write something first!";
         }
     }
-    else if (listToAddNewElement == null || listToAddNewElement == undefined)
+    else if (V_ListToAddNewElement == null || V_ListToAddNewElement == undefined)
     {
         window.alert("hum... the list doesn't exist...");
     }
@@ -327,19 +339,19 @@ function AddElement(_toAdd, _textInput)
         document.getElementById("addNewElementError").innerHTML = "";
 
         // number of elements in the list
-        var nbOfElements = listToAddNewElement.getElementsByTagName("li").length;
+        var nbOfElements = V_ListToAddNewElement.getElementsByTagName("li").length;
 
         // add element in the list
-        listToAddNewElement.innerHTML +=
-		'<li class="collection-item ui-sortable-handle" id="' + listToAddNewElement.id + '_element' + (nbOfElements + 1) + '" >' +
-		'	<input type="checkbox" class="filled-in" id="' + listToAddNewElement.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '">' +
-		'	<label for="' + listToAddNewElement.id + '_check' + (nbOfElements + 1) + '">' + _toAdd + '</label> ' +
-		'	<a href="#!" class="secondary-content" onclick="EraseElement(' + listToAddNewElement.id + '_element' + (nbOfElements + 1) + ', ' + listToAddNewElement.id + ')"><i class="material-icons">delete</i></a>' +
+        V_ListToAddNewElement.innerHTML +=
+		'<li class="collection-item ui-sortable-handle" id="' + V_ListToAddNewElement.id + '_element' + (nbOfElements + 1) + '" >' +
+		'	<input type="checkbox" class="filled-in" id="' + V_ListToAddNewElement.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '">' +
+		'	<label for="' + V_ListToAddNewElement.id + '_check' + (nbOfElements + 1) + '">' + _toAdd + '</label> ' +
+		'	<a href="#!" class="secondary-content" onclick="EraseElement(' + V_ListToAddNewElement.id + '_element' + (nbOfElements + 1) + ', ' + V_ListToAddNewElement.id + ')"><i class="material-icons">delete</i></a>' +
 		'</li>';
 
         $('#addNewElement').modal("close");
         
-        listToAddNewElement = null;
+        V_ListToAddNewElement = null;
 
         SaveGrid();
     }
@@ -387,7 +399,7 @@ function EraseElement(_toErase, _list)
         {
             if (elements[i] == _toErase)
             {
-                storage.removeItem(elements[i].id);
+                V_Storage.removeItem(elements[i].id);
                 _list.removeChild(elements[i]);
                 ReorganiseList(_list);
                 break;
@@ -423,24 +435,24 @@ function ReorganiseList(_list)
     SaveGrid();
 }
 
-function RemoveList(_grid)
+function RemoveList()
 {
-    if (listToRemove == null || listToRemove == undefined)
+    if (V_ListToRemove == null || V_ListToRemove == undefined)
     {
         window.alert("Alert! This list doesn't exist anymore!");
     }
-    else if (_grid == null || _grid == undefined)
+    else if (V_Grid == null || V_Grid == undefined)
     {
         window.alert("hum... the grid doesn't exist...");
     }
     else
     {
-        var lists = _grid.getElementsByTagName("ul");
+        var lists = V_Grid.getElementsByTagName("ul");
 
         // We will now check in the grid where '_list' is located		
         for (i = 0; i < lists.length; i++)
         {
-            if (lists[i] == listToRemove)
+            if (lists[i] == V_ListToRemove)
             {
                 lists[i].parentNode.parentNode.parentNode.removeChild(lists[i].parentNode.parentNode);
                 break;
@@ -449,11 +461,11 @@ function RemoveList(_grid)
 
         document.getElementById("removeListText").innerHTML = "";
 
-        listToRemove = null;
+        V_ListToRemove = null;
 
         $('#removeList').modal("close");
 
-        ReorganiseGrid(_grid);
+        ReorganiseGrid();
     }
 }
 
@@ -463,9 +475,9 @@ function RemoveList(_grid)
 
 function CheckLanguage()
 {
-    language = navigator.language || navigator.userLanguage;
+    V_Language = navigator.language || navigator.userLanguage;
 
-    switch (language)
+    switch (V_Language)
     {
         case "fr":
             ChangeToBaguette();

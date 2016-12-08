@@ -1,0 +1,8 @@
+.modal
+{
+}
+
+#addNewListError, #addNewElementError
+{
+    color : red;
+}

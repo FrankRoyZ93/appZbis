@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>   
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
@@ -33,80 +33,84 @@
     </div>
 
     <!-- Add list modal -->
-    <div id="addNewList" class="modal" style="height:auto;">
-        <div class="modal-content" style="height:auto;">
+    <div id="addNewList" class="modal">
+        <div class="modal-content">
             <div class="row">
                 <div class="col s12">
                     <input type="text" id="addNewListText" maxlength="35" placeholder="Add new list..." />
                 </div>
             </div>
-        </div>
-        <div class="modal-footer" style="height:auto;">
-            <div class="row">
+            <div class="modal-footer">
                 <div class="col s6">
-                    <p id="addNewListError" style="color:red;"></p>
+                    <p id="addNewListError"></p>
                 </div>
                 <div class="col s6">
-                    <button id="createNewList" class="waves-effect waves-green btn-flat" onclick="CreateList(addNewListText.value, listsGrid)">Create</button>
+                    <button id="createNewList" class="waves-effect waves-green btn-flat">Create</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Add element modal -->
-    <div id="addNewElement" class="modal" style="height:auto;">
-        <div class="modal-content" style="height:auto;">
+    <div id="addNewElement" class="modal">
+        <div class="modal-content">
             <div class="row">
                 <div class="col s12">
                     <input type="text" id="addNewElementText" maxlength="35" placeholder="Add new element in this list..." />
                 </div>
             </div>
-        </div>
-        <div class="modal-footer" style="height:auto;">
-            <div class="row">
+            <div class="modal-footer">
                 <div class="col s6">
-                    <p id="addNewElementError" style="color:red;"></p>
+                    <p id="addNewElementError"></p>
                 </div>
                 <div class="col s6">
-                    <button id="createNewElement" class="waves-effect waves-green btn-flat" onclick="AddElement(addNewElementText.value, addNewElementText)">Create</button>
+                    <button id="createNewElement" class="waves-effect waves-green btn-flat">Create</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Remove list modal -->
-    <div id="removeList" class="modal" style="height:auto;">
-        <div class="modal-content" style="height:auto;">
+    <div id="removeList" class="modal">
+        <div class="modal-content">
             <div class="row">
                 <div class="col s12">
                     <p id="removeListText"></p>
                 </div>
             </div>
-        </div>
-        <div class="modal-footer" style="height:auto;">
-            <button id="RemoveListYesButton" class="waves-effect waves-green btn-flat" onclick="RemoveList(listsGrid)">Yes</button>
-            <button id="RemoveListNoButton" class="modal-action modal-close waves-effect waves-green btn-flat">No</button>
+            <div class="modal-footer">
+                <div class="col s6">
+                    <button id="RemoveListYesButton" class="waves-effect waves-green btn-flat">Yes</button>
+                </div>
+                <div class="col s6">
+                    <button id="RemoveListNoButton" class="modal-action modal-close waves-effect waves-green btn-flat">No</button>
+                </div>
+            </div>
         </div>
     </div>   
     
     <!-- Clear grid modal -->
-    <div id="removeAllList" class="modal" style="height:auto;">
-        <div class="modal-content" style="height:auto;">
+    <div id="removeAllList" class="modal">
+        <div class="modal-content">
             <div class="row">
                 <div class="col s12">
                     <p id="removeAllListText">Are you sure you want to erase all lists?</p>
                 </div>
             </div>
-        </div>
-        <div class="modal-footer" style="height:auto;">
-            <button class="waves-effect waves-green btn-flat" id="removeAllListYes" onclick="Clear()">Yes</button>
-            <button class="modal-action modal-close waves-effect waves-green btn-flat" id="removeAllListNo">No</button>
+            <div class="modal-footer">
+                <div class="col s6">
+                    <button class="waves-effect waves-green btn-flat" id="removeAllListYes">Yes</button>
+                </div>
+                <div class="col s6">
+                    <button class="modal-action modal-close waves-effect waves-green btn-flat" id="removeAllListNo">No</button>
+                </div>
+            </div>
         </div>
     </div>    
     
     <!-- Import modal -->
-    <div id="importFile" class="modal" style="height:auto;">
-        <div class="modal-content" style="height:auto;">
+    <div id="importFile" class="modal">
+        <div class="modal-content">
             <div class="row">
                 <div class="col s12">
                     <div class="file-field input-field">
@@ -120,23 +124,27 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="modal-footer" style="height:auto;">
-            <button class="btn waves-effect waves-light" id="importFileButton" onclick="Import(fileToImport.files[0])">Import</button>
+            <div class="modal-footer">
+                <div class="col s12">
+                    <button class="btn waves-effect waves-light" id="importFileButton">Import</button>
+                </div>
+            </div>
         </div>
     </div>
     
     <!-- Export modal -->
-    <div id="exportFile" class="modal" style="height:auto;">
-        <div class="modal-content" style="height:auto;">
+    <div id="exportFile" class="modal">
+        <div class="modal-content">
             <div class="row">
                 <div class="col s12">
                     <input type="text" id="fileToExportName" placeholder="Enter a name...">
                 </div>
             </div>
-        </div>
-        <div class="modal-footer" style="height:auto;">
-            <button class="btn waves-effect waves-light" id="exportFileButton" onclick="Export(fileToExportName.value)">Export</button>
+            <div class="modal-footer">
+                <div class="col s12">
+                    <button class="btn waves-effect waves-light" id="exportFileButton">Export</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -163,40 +171,68 @@
 
     <script type="text/javascript">
         document.addEventListener("deviceready", Load, false);
-
         $(document).ready(function () {
             $('.modal').modal();
         });
+    </script>
 
+    <!-- On click events -->
+    <script type="text/javascript">
+        $("#createNewList").on("click", function () {
+            CreateList($("#addNewListText").val());
+            return false;
+        });
+
+        $("#createNewElement").on("click", function () {
+            AddElement($("#addNewElementText").val(), $("#addNewElementText"));
+            return false;
+        });
+
+        $("#RemoveListYesButton").on("click", function () {
+            RemoveList();
+            return false;
+        });
+
+        // **** Modals **** //
         //Open modal when FAB add is click
-        $("#addNewListFab").click(function () {
+        $("#addNewListFab").on("click", function () {
             $('#addNewList').modal("open");
+            return false;
         });
 
-        $("#clearAllListsFab").click(function () {
+        $("#clearAllListsFab").on("click", function () {
             $('#removeAllList').modal("open");
+            return false;
         });
 
-        $("#removeAllListYes").click(function () {
+        $("#removeAllListYes").on("click", function () {
             $('#removeAllList').modal("close");
-        });
-        
-        $("#importFab").click(function () {
-            $('#importFile').modal("open");
+            Clear();
+            return false;
         });
 
-        $("#exportFab").click(function () {
+        $("#importFab").on("click", function () {
+            $('#importFile').modal("open");
+            return false;
+        });
+
+        $("#exportFab").on("click", function () {
             $('#exportFile').modal("open");
+            return false;
         });
 
         //import button
-        $("#importFileButton").click(function () {
+        $("#importFileButton").on("click", function () {
             $('#importFile').modal("close");
+            Import($('#fileToImport')[0].files[0]);
+            return false;
         });
 
         //export button
-        $("#exportFileButton").click(function () {
+        $("#exportFileButton").on("click", function () {
             $('#exportFile').modal("close");
+            Export($("#fileToExportName").val());
+            return false;
         });
     </script>
 </body>
