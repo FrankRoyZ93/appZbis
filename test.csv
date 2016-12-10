@@ -1,17 +1,2 @@
-﻿{
-	"lists" : [
-				{"name" : "My List",
-				 "list" : [
-							{"name" : "Paul Auchon"},
-							{"name" : "Oscar De Brie"}
-						  ]
-				},
-				{"name" : "Another List",
-				 "list" : [
-							{"name" : "Oscar De Brie"},
-							{"name" : "Harry Cover"},
-							{"name" : "Marc De Café"}
-						  ]
-				}
-			  ]
-}
+﻿My List;Paul Auchon;Oscar De Brie
+Another List;Oscar De Brie;Harry Cover;Marc De Café

@@ -61,19 +61,20 @@ function Clear()
 function Import(_file)
 {
     var reader = new FileReader();
-    
+
     reader.onloadend = function (e) {
-        var listsToLoad = reader.result;
-
-        var obj = JSON.parse(listsToLoad);
+        var result = reader.result;
+        var listsToLoad = result.split("\n");
         
-        for (i = 0; i < obj.lists.length; i++)
+        for (i = 0; i < listsToLoad.length; i++)
         {
-            var newList = CreateList(obj.lists[i].name);
+            var list = listsToLoad[i].split(";");
 
-            for (j = 0; j < obj.lists[i].list.length; j++)
+            var newList = CreateList(list[0]);
+
+            for (j = 1; j < list.length; j++)
             {
-                AddNewElement(obj.lists[i].list[j].name, newList);
+                AddNewElement(list[j], newList);
             }
         }
     }
@@ -87,7 +88,7 @@ function Export(_Name)
     var data = CreateCSV();
     var fileName = _Name + ".csv";
 
-    element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURI(data));
+    element.setAttribute('href', 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(data));
     element.setAttribute('download', fileName);
 
     element.style.display = 'none';
@@ -100,34 +101,30 @@ function Export(_Name)
 
 function CreateCSV()
 {
-    var resultCSV = '{ "lists" : [ ';
+    var resultCSV = '';
 
     var lists = V_Grid.getElementsByTagName("ul");
 
     for (i = 0; i < lists.length; i++)
     {
-        resultCSV += '{ "name" : "' + lists[i].parentNode.getElementsByTagName("h4")[0].innerHTML + '", "list" : [ ';
+        resultCSV += lists[i].parentNode.getElementsByTagName("h4")[0].innerHTML;
 
         var list = lists[i].getElementsByTagName("li");
 
+        if (list.length > 0)
+        {
+            resultCSV += ';';
+        }
+
         for (j = 0; j < list.length; j++)
         {
-            resultCSV += '{ "name" : "' + list[j].getElementsByTagName("label")[0].innerHTML + '"}';
+            resultCSV += list[j].getElementsByTagName("label")[0].innerHTML;
             if(j + 1 < list.length)
             {
-                resultCSV += ', ';
+                resultCSV += ';';
             }
         }
-
-        resultCSV += ' ] }';
-
-        if (i + 1 < lists.length)
-        {
-            resultCSV += ', ';
-        }
     }
-
-    resultCSV += ' ] }';
 
     return resultCSV;
 }
@@ -137,7 +134,7 @@ function CreateCSV()
 // ************************ //
 
 function CreateList(_name)
-{    
+{
     if (_name == "")
     {
         switch (V_Language)
@@ -165,26 +162,26 @@ function CreateList(_name)
         // add list in the grid
         V_Grid.innerHTML +=
         '<div class="col l4 m6 s12 AppZbisRDV_List">' +
-		'	<div class="card-panel">' +
-		'		<div class="row">' +
-		'			<div class="col s12">' +
-		'		        <h4 id="list' + (nbOfElements + 1) + 'Name" onclick="EnterNewTitle(list' + (nbOfElements + 1) + 'Name, list' + (nbOfElements + 1) + 'ChangeTitle)">' + _name + '</h4>' +
-		'		        <input id="list' + (nbOfElements + 1) + 'ChangeTitle" type="text" onblur="ChangeTitle(list' + (nbOfElements + 1) + 'Name, list' + (nbOfElements + 1) + 'ChangeTitle)" />' +
-		'		    </div>' +
-		'		</div>' +
-		'		<ul class="collection ui-sortable sortable" id="list' + (nbOfElements + 1) + '">' +
-		'		</ul>' +
-		'		<!-- Add area -->' +
-		'		<div class="row">' +  
-        '			<div class="col s6" id="list' + (nbOfElements + 1) + 'AddButtonCol">' +
-        '				<a class="waves-effect waves-light btn green" id="list' + (nbOfElements + 1) + 'AddButton" onclick="SetListToAddNewElement(list' + (nbOfElements + 1) + ')">Add</a>' +
-        '			</div>' +
-        '			<div class="col s6" id="list' + (nbOfElements + 1) + 'DeleteButtonCol">' +
-        '				<a class="waves-effect waves-light btn red" id="list' + (nbOfElements + 1) + 'DeleteButton" onclick="SetListToRemove(list' + (nbOfElements + 1) + ')">Delete</a>' +
-        '			</div>' +	
-		'		</div>' +
-		'	</div>' +
-		'</div>';
+        '   <div class="card-panel">' +
+        '       <div class="row">' +
+        '           <div class="col s12">' +
+        '               <h4 id="list' + (nbOfElements + 1) + 'Name" onclick="EnterNewTitle(list' + (nbOfElements + 1) + 'Name, list' + (nbOfElements + 1) + 'ChangeTitle)">' + _name + '</h4>' +
+        '               <input id="list' + (nbOfElements + 1) + 'ChangeTitle" type="text" onblur="ChangeTitle(list' + (nbOfElements + 1) + 'Name, list' + (nbOfElements + 1) + 'ChangeTitle)" />' +
+        '           </div>' +
+        '       </div>' +
+        '       <ul class="collection ui-sortable sortable" id="list' + (nbOfElements + 1) + '">' +
+        '       </ul>' +
+        '       <!-- Add area -->' +
+        '       <div class="row">' +  
+        '           <div class="col s6" id="list' + (nbOfElements + 1) + 'AddButtonCol">' +
+        '               <a class="waves-effect waves-light btn green" id="list' + (nbOfElements + 1) + 'AddButton" onclick="SetListToAddNewElement(list' + (nbOfElements + 1) + ')">Add</a>' +
+        '           </div>' +
+        '           <div class="col s6" id="list' + (nbOfElements + 1) + 'DeleteButtonCol">' +
+        '               <a class="waves-effect waves-light btn red" id="list' + (nbOfElements + 1) + 'DeleteButton" onclick="SetListToRemove(list' + (nbOfElements + 1) + ')">Delete</a>' +
+        '           </div>' +	
+        '       </div>' +
+        '   </div>' +
+        '</div>';
 
         switch (V_Language)
         {
@@ -211,7 +208,7 @@ function CreateList(_name)
         $('#addNewList').modal("close");
 
         SaveGrid();
-        
+
         return document.getElementById("list" + (nbOfElements + 1));
     }
 }
@@ -248,7 +245,7 @@ function ReorganiseGrid()
 
             lists[i].getElementsByTagName("h4")[0].parentNode =
                 '<h4 id="list' + (i + 1) + 'Name" onclick="EnterNewTitle(list' + (i + 1) + 'Name, list' + (i + 1) + 'ChangeTitle)">' + listName + '</h4>' +
-		        '<input id="list' + (i + 1) + 'ChangeTitle" type="text" onblur="ChangeTitle(list' + (i + 1) + 'Name, list' + (i + 1) + 'ChangeTitle)" />';
+                '<input id="list' + (i + 1) + 'ChangeTitle" type="text" onblur="ChangeTitle(list' + (i + 1) + 'Name, list' + (i + 1) + 'ChangeTitle)" />';
 
             var arrayOfA = lists[i].getElementsByTagName("a");
             
@@ -343,14 +340,14 @@ function AddElement(_toAdd, _textInput)
 
         // add element in the list
         V_ListToAddNewElement.innerHTML +=
-		'<li class="collection-item ui-sortable-handle" id="' + V_ListToAddNewElement.id + '_element' + (nbOfElements + 1) + '" >' +
-		'	<input type="checkbox" class="filled-in" id="' + V_ListToAddNewElement.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '">' +
-		'	<label for="' + V_ListToAddNewElement.id + '_check' + (nbOfElements + 1) + '">' + _toAdd + '</label> ' +
-		'	<a href="#!" class="secondary-content" onclick="EraseElement(' + V_ListToAddNewElement.id + '_element' + (nbOfElements + 1) + ', ' + V_ListToAddNewElement.id + ')"><i class="material-icons">delete</i></a>' +
-		'</li>';
+        '<li class="collection-item ui-sortable-handle" id="' + V_ListToAddNewElement.id + '_element' + (nbOfElements + 1) + '" >' +
+        '   <input type="checkbox" class="filled-in" id="' + V_ListToAddNewElement.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '">' +
+        '   <label for="' + V_ListToAddNewElement.id + '_check' + (nbOfElements + 1) + '">' + _toAdd + '</label> ' +
+        '   <a href="#!" class="secondary-content" onclick="EraseElement(' + V_ListToAddNewElement.id + '_element' + (nbOfElements + 1) + ', ' + V_ListToAddNewElement.id + ')"><i class="material-icons">delete</i></a>' +
+        '</li>';
 
         $('#addNewElement').modal("close");
-        
+
         V_ListToAddNewElement = null;
 
         SaveGrid();
@@ -370,11 +367,11 @@ function AddNewElement(_toAdd, _list)
 
         // add element in the list
         _list.innerHTML +=
-		'<li class="collection-item ui-sortable-handle" id="' + _list.id + '_element' + (nbOfElements + 1) + '" >' +
-		'	<input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '">' +
-		'	<label for="' + _list.id + '_check' + (nbOfElements + 1) + '">' + _toAdd + '</label> ' +
-		'	<a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (nbOfElements + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>' +
-		'</li>';
+        '<li class="collection-item ui-sortable-handle" id="' + _list.id + '_element' + (nbOfElements + 1) + '" >' +
+        '   <input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '">' +
+        '   <label for="' + _list.id + '_check' + (nbOfElements + 1) + '">' + _toAdd + '</label> ' +
+        '   <a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (nbOfElements + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>' +
+        '</li>';
 
         SaveGrid();
     }
@@ -425,9 +422,9 @@ function ReorganiseList(_list)
         var isChecked = elements[i].getElementsByTagName("input")[0].checked;
 
         elements[i].innerHTML =
-		'	<input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (i + 1) + '" value="' + elements[i].getElementsByTagName("input")[0].value + '">' +
-		'	<label for="' + _list.id + '_check' + (i + 1) + '">' + elements[i].getElementsByTagName("input")[0].value + '</label> ' +
-		'	<a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (i + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>';
+        '   <input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (i + 1) + '" value="' + elements[i].getElementsByTagName("input")[0].value + '">' +
+        '   <label for="' + _list.id + '_check' + (i + 1) + '">' + elements[i].getElementsByTagName("input")[0].value + '</label> ' +
+        '   <a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (i + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>';
 
         elements[i].getElementsByTagName("input")[0].checked = isChecked;
     }
