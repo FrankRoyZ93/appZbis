@@ -1,2 +1,6 @@
-﻿My List;Paul Auchon;Oscar De Brie
-Another List;Oscar De Brie;Harry Cover;Marc De Café
+﻿List_Name;Element_Name;Element_Present
+My List;Paul Auchon;oui
+My List;Oscar De Brie;non
+Another List;Oscar De Brie;oui
+Another List;Harry Cover;oui
+Another List;Marc De Café;non

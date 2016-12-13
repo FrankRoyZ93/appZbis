@@ -39,6 +39,10 @@ function Load()
         }
     });
 
+    $(".filled-in").on("click", function () {
+        SaveGrid();
+    });
+
     CheckLanguage();
 }
 
@@ -46,6 +50,8 @@ function SaveGrid()
 {
     V_Grid = document.getElementById("listsGrid");
     V_Storage.setItem("Grid", V_Grid.innerHTML);
+
+    document.getElementById("debug").innerHTML += "Save";
 }
 
 function Clear()
@@ -66,15 +72,36 @@ function Import(_file)
         var result = reader.result;
         var listsToLoad = result.split("\n");
         
-        for (i = 0; i < listsToLoad.length; i++)
+        var listsCreatedNames = [];
+        var listsCreated = [];
+
+        for (i = 1; i < listsToLoad.length; i++)
         {
-            var list = listsToLoad[i].split(";");
+            var listParameters = listsToLoad[i].split(";");
+            var listInUse;
 
-            var newList = CreateList(list[0]);
-
-            for (j = 1; j < list.length; j++)
+            if (!Contains(listParameters[0], listsCreatedNames))
             {
-                AddNewElement(list[j], newList);
+                listsCreatedNames.push(listParameters[0]);
+
+                listInUse = CreateList(listParameters[0]);
+                
+                listsCreated.push(listInUse);
+            }
+            else
+            {
+                listInUse = listsCreated[listsCreatedNames.indexOf(listParameters[0])];
+            }
+
+            var newElement = AddNewElement(listParameters[1], listInUse);
+
+            if (listParameters[2].includes("oui"))
+            {
+                CheckElement(newElement, true);
+            }
+            else
+            {
+                CheckElement(newElement, false);
             }
         }
     }
@@ -101,27 +128,25 @@ function Export(_Name)
 
 function CreateCSV()
 {
-    var resultCSV = '';
+    var resultCSV = 'List_Name;Element_Name;Element_Present\n';
 
     var lists = V_Grid.getElementsByTagName("ul");
 
     for (i = 0; i < lists.length; i++)
     {
-        resultCSV += lists[i].parentNode.getElementsByTagName("h4")[0].innerHTML;
+        var elements = lists[i].getElementsByTagName("li");
 
-        var list = lists[i].getElementsByTagName("li");
-
-        if (list.length > 0)
+        for (j = 0; j < elements.length; j++)
         {
-            resultCSV += ';';
-        }
+            resultCSV += lists[i].parentNode.getElementsByTagName("h4")[0].innerHTML + ";" + elements[j].getElementsByTagName("label")[0].innerHTML;
 
-        for (j = 0; j < list.length; j++)
-        {
-            resultCSV += list[j].getElementsByTagName("label")[0].innerHTML;
-            if(j + 1 < list.length)
+            if(elements[j].getElementsByTagName("input")[0].checked)
             {
-                resultCSV += ';';
+                resultCSV += ";oui\n";
+            }
+            else
+            {
+                resultCSV += ";non\n";
             }
         }
     }
@@ -312,7 +337,7 @@ function ChangeTitle(_NameElement, _NameInput)
     SaveGrid();
 }
 
-function AddElement(_toAdd, _textInput)
+function AddElement(_toAdd)
 {
     if (_toAdd == "")
     {
@@ -332,7 +357,7 @@ function AddElement(_toAdd, _textInput)
     else
     {
         // reset the "Add" text 
-        _textInput.value = "";
+        document.getElementById("addNewElementText").value = "";
         document.getElementById("addNewElementError").innerHTML = "";
 
         // number of elements in the list
@@ -340,13 +365,17 @@ function AddElement(_toAdd, _textInput)
 
         // add element in the list
         V_ListToAddNewElement.innerHTML +=
-        '<li class="collection-item ui-sortable-handle" id="' + V_ListToAddNewElement.id + '_element' + (nbOfElements + 1) + '" >' +
-        '   <input type="checkbox" class="filled-in" id="' + V_ListToAddNewElement.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '">' +
-        '   <label for="' + V_ListToAddNewElement.id + '_check' + (nbOfElements + 1) + '">' + _toAdd + '</label> ' +
+        '<li class="collection-item ui-sortable-handle" id="' + V_ListToAddNewElement.id + '_element' + (nbOfElements + 1) + '">' +
+        '   <input type="checkbox" class="filled-in" id="' + V_ListToAddNewElement.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '" checked="" />' +
+        '   <label for="' + V_ListToAddNewElement.id + '_check' + (nbOfElements + 1) + '" id="' + V_ListToAddNewElement.id + '_label' + (nbOfElements + 1) + '">' + _toAdd + '</label> ' +
         '   <a href="#!" class="secondary-content" onclick="EraseElement(' + V_ListToAddNewElement.id + '_element' + (nbOfElements + 1) + ', ' + V_ListToAddNewElement.id + ')"><i class="material-icons">delete</i></a>' +
         '</li>';
 
         $('#addNewElement').modal("close");
+
+        $(".filled-in").on("click", function () {
+            SaveGrid();
+        });
 
         V_ListToAddNewElement = null;
 
@@ -368,12 +397,18 @@ function AddNewElement(_toAdd, _list)
         // add element in the list
         _list.innerHTML +=
         '<li class="collection-item ui-sortable-handle" id="' + _list.id + '_element' + (nbOfElements + 1) + '" >' +
-        '   <input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '">' +
-        '   <label for="' + _list.id + '_check' + (nbOfElements + 1) + '">' + _toAdd + '</label> ' +
+        '   <input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '" checked="" />' +
+        '   <label for="' + _list.id + '_check' + (nbOfElements + 1) + '" id="' + _list.id + '_label' + (nbOfElements + 1) + '">' + _toAdd + '</label> ' +
         '   <a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (nbOfElements + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>' +
         '</li>';
 
         SaveGrid();
+
+        $(".filled-in").on("click", function () {
+            SaveGrid();
+        });
+
+        return document.getElementById(_list.id + '_element' + (nbOfElements + 1));
     }
 }
 
@@ -422,8 +457,8 @@ function ReorganiseList(_list)
         var isChecked = elements[i].getElementsByTagName("input")[0].checked;
 
         elements[i].innerHTML =
-        '   <input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (i + 1) + '" value="' + elements[i].getElementsByTagName("input")[0].value + '">' +
-        '   <label for="' + _list.id + '_check' + (i + 1) + '">' + elements[i].getElementsByTagName("input")[0].value + '</label> ' +
+        '   <input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (i + 1) + '" value="' + elements[i].getElementsByTagName("input")[0].value + '" checked="" />' +
+        '   <label for="' + _list.id + '_check' + (i + 1) + '" id="' + _list.id + '_label' + (i + 1) + '">' + elements[i].getElementsByTagName("input")[0].value + '</label> ' +
         '   <a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (i + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>';
 
         elements[i].getElementsByTagName("input")[0].checked = isChecked;
@@ -464,6 +499,11 @@ function RemoveList()
 
         ReorganiseGrid();
     }
+}
+
+function CheckElement(_element, _value)
+{
+    $(_element.getElementsByTagName("input")[0]).attr("checked", _value);
 }
 
 // **************************** //
@@ -536,4 +576,22 @@ function ChangeToRosbeef()
         arrayOfA[arrayOfA.length - 2].innerHTML = 'Add';
         arrayOfA[arrayOfA.length - 1].innerHTML = 'Delete';
     }
+}
+
+// *************************** //
+// **** Utility functions **** //
+// *************************** //
+
+function Contains(obj, list)
+{
+    var i;
+    for (i = 0; i < list.length; i++) 
+    {
+        if (list[i] == obj)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
