@@ -31,6 +31,15 @@ function Load()
     if(grid != "" || grid != undefined)
     {
         V_Grid.innerHTML = grid;
+
+        var checkboxes = $(V_Grid).find(":checkbox");
+        var isChecked = JSON.parse(V_Storage.getItem("checkboxes"));
+
+        var i;
+        for (i = 0; i < checkboxes.length; i++)
+        {
+            checkboxes[i].checked = isChecked[i];
+        }
     }
 
     $(".sortable").sortable({
@@ -50,8 +59,16 @@ function SaveGrid()
 {
     V_Grid = document.getElementById("listsGrid");
     V_Storage.setItem("Grid", V_Grid.innerHTML);
+    var checkboxes = $(V_Grid).find(":checkbox");
+    var checked = [];
 
-    document.getElementById("debug").innerHTML += "Save";
+    var i;
+    for (i = 0; i < checkboxes.length; i++)
+    {
+        checked.push(checkboxes[i].checked);
+    }
+
+    V_Storage.setItem("checkboxes", JSON.stringify(checked));
 }
 
 function Clear()
@@ -364,22 +381,46 @@ function AddElement(_toAdd)
         var nbOfElements = V_ListToAddNewElement.getElementsByTagName("li").length;
 
         // add element in the list
-        V_ListToAddNewElement.innerHTML +=
-        '<li class="collection-item ui-sortable-handle" id="' + V_ListToAddNewElement.id + '_element' + (nbOfElements + 1) + '">' +
-        '   <input type="checkbox" class="filled-in" id="' + V_ListToAddNewElement.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '" checked="" />' +
-        '   <label for="' + V_ListToAddNewElement.id + '_check' + (nbOfElements + 1) + '" id="' + V_ListToAddNewElement.id + '_label' + (nbOfElements + 1) + '">' + _toAdd + '</label> ' +
-        '   <a href="#!" class="secondary-content" onclick="EraseElement(' + V_ListToAddNewElement.id + '_element' + (nbOfElements + 1) + ', ' + V_ListToAddNewElement.id + ')"><i class="material-icons">delete</i></a>' +
-        '</li>';
+        var newLI = document.createElement("li");
+        var newBox = document.createElement("input");
+        var newLabel = document.createElement("label");
+        var newA = document.createElement("a");
+        var newI = document.createElement("i");
+
+        newA.appendChild(newI);
+        newLI.appendChild(newBox);
+        newLI.appendChild(newLabel);
+        newLI.appendChild(newA);
+        V_ListToAddNewElement.appendChild(newLI);
+
+        newLI.setAttribute("class", "collection-item ui-sortable-handle");
+        newLI.setAttribute("id", V_ListToAddNewElement.id + "_element" + (nbOfElements + 1));
+
+        newBox.setAttribute("type", "checkbox");
+        newBox.setAttribute("class", "filled-in");
+        newBox.setAttribute("id", V_ListToAddNewElement.id + "_check" + (nbOfElements + 1));
+        newBox.setAttribute("value", _toAdd);
+
+        newLabel.setAttribute("for", V_ListToAddNewElement.id + "_check" + (nbOfElements + 1));
+        newLabel.setAttribute("id", V_ListToAddNewElement.id + "_label" + (nbOfElements + 1));
+        newLabel.innerHTML = _toAdd;
+
+        newA.setAttribute("href", "#!");
+        newA.setAttribute("class", "secondary-content");
+        newA.setAttribute("onclick", "EraseElement(" + V_ListToAddNewElement.id + "_element" + (nbOfElements + 1) + ", " + V_ListToAddNewElement.id + ")");
+
+        newI.setAttribute("class", "material-icons");
+        newI.innerHTML = "delete";
 
         $('#addNewElement').modal("close");
+        
+        V_ListToAddNewElement = null;
+
+        SaveGrid();
 
         $(".filled-in").on("click", function () {
             SaveGrid();
         });
-
-        V_ListToAddNewElement = null;
-
-        SaveGrid();
     }
 }
 
@@ -395,12 +436,36 @@ function AddNewElement(_toAdd, _list)
         var nbOfElements = _list.getElementsByTagName("li").length;
 
         // add element in the list
-        _list.innerHTML +=
-        '<li class="collection-item ui-sortable-handle" id="' + _list.id + '_element' + (nbOfElements + 1) + '" >' +
-        '   <input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '" checked="" />' +
-        '   <label for="' + _list.id + '_check' + (nbOfElements + 1) + '" id="' + _list.id + '_label' + (nbOfElements + 1) + '">' + _toAdd + '</label> ' +
-        '   <a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (nbOfElements + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>' +
-        '</li>';
+        var newLI = document.createElement("li");
+        var newBox = document.createElement("input");
+        var newLabel = document.createElement("label");
+        var newA = document.createElement("a");
+        var newI = document.createElement("i");
+
+        newA.appendChild(newI);
+        newLI.appendChild(newBox);
+        newLI.appendChild(newLabel);
+        newLI.appendChild(newA);
+        _list.appendChild(newLI);
+
+        newLI.setAttribute("class", "collection-item ui-sortable-handle");
+        newLI.setAttribute("id", _list.id + "_element" + (nbOfElements + 1));
+
+        newBox.setAttribute("type", "checkbox");
+        newBox.setAttribute("class", "filled-in");
+        newBox.setAttribute("id", _list.id + "_check" + (nbOfElements + 1));
+        newBox.setAttribute("value", _toAdd);
+
+        newLabel.setAttribute("for", _list.id + "_check" + (nbOfElements + 1));
+        newLabel.setAttribute("id", _list.id + "_label" + (nbOfElements + 1));
+        newLabel.innerHTML = _toAdd;
+
+        newA.setAttribute("href", "#!");
+        newA.setAttribute("class", "secondary-content");
+        newA.setAttribute("onclick", "EraseElement(" + _list.id + "_element" + (nbOfElements + 1) + ", " + _list.id + ")");
+
+        newI.setAttribute("class", "material-icons");
+        newI.innerHTML = "delete";
 
         SaveGrid();
 
@@ -457,7 +522,7 @@ function ReorganiseList(_list)
         var isChecked = elements[i].getElementsByTagName("input")[0].checked;
 
         elements[i].innerHTML =
-        '   <input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (i + 1) + '" value="' + elements[i].getElementsByTagName("input")[0].value + '" checked="" />' +
+        '   <input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (i + 1) + '" value="' + elements[i].getElementsByTagName("input")[0].value + '" />' +
         '   <label for="' + _list.id + '_check' + (i + 1) + '" id="' + _list.id + '_label' + (i + 1) + '">' + elements[i].getElementsByTagName("input")[0].value + '</label> ' +
         '   <a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (i + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>';
 
