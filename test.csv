@@ -1,6 +1,6 @@
-﻿List_Name;Element_Name;Element_Present
-My List;Paul Auchon;oui
-My List;Oscar De Brie;non
-Another List;Oscar De Brie;oui
-Another List;Harry Cover;oui
-Another List;Marc De Café;non
+﻿List_Name;Element_Name;Element_Present;Element_Email
+My List;Paul Auchon;oui;paul.auchon@gmail.com
+My List;Oscar De Brie;non;os_4_2_brie@gmail.com
+Another List;Oscar De Brie;oui;os_4_2_brie@gmail.com
+Another List;Harry Cover;oui;harrycover25@gmail.com
+Another List;Marc De Café;non;marc2coffee@gmail.com

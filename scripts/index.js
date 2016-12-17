@@ -28,7 +28,7 @@ function Load()
 
     V_Grid = document.getElementById("listsGrid");
 
-    if(grid != "" || grid != undefined)
+    if (grid != "" || grid != undefined || grid != null)
     {
         V_Grid.innerHTML = grid;
 
@@ -40,16 +40,31 @@ function Load()
         {
             checkboxes[i].checked = isChecked[i];
         }
+
+        RefreshElements();
     }
 
+    // make the elements of the list sortable
     $(".sortable").sortable({
         stop: function (event, ui) {
             ReorganiseList(document.getElementById($(".sortable").attr("id")));
         }
     });
 
+    //Save each time a checkbox is checked
     $(".filled-in").on("click", function () {
         SaveGrid();
+    });
+
+    //Initialize dropdown
+    $('.dropdown-button').dropdown({
+        inDuration: 300,
+        outDuration: 225,
+        constrain_width: false,
+        hover: true, // Activate on hover
+        gutter: 0, // Spacing from edge
+        belowOrigin: false,
+        alignment: 'right' // Displays dropdown with edge aligned to the left of button
     });
 
     CheckLanguage();
@@ -69,6 +84,51 @@ function SaveGrid()
     }
 
     V_Storage.setItem("checkboxes", JSON.stringify(checked));
+
+    var elementsInList = document.getElementsByClassName("AppZbisRDV_ListsElements");
+    var elements = '{ "element" : [ ';
+    
+    var names = [];
+
+    for (i = 0; i < elementsInList.length; i++)
+    {
+        if (names.indexOf(elementsInList[i].getElementsByTagName("label")[0].innerHTML) == -1)
+        {
+            names.push(elementsInList[i].getElementsByTagName("label")[0].innerHTML);
+
+
+            elements += '{ "name" : "' + elementsInList[i].getElementsByTagName("label")[0].innerHTML + '", "email" :"' + elementsInList[i].getElementsByTagName("input")[1].value + '" }';
+            
+            if (i +1 < elementsInList.length)
+            {
+                elements +=', ';
+            }
+        }
+        
+    }
+    elements += ' ] }';
+    elements = elements.replace(/(\r\n|\n|\r)/gm, "");
+        
+    V_Storage.setItem("elements", elements);
+
+    RefreshElements();
+}
+
+function RefreshElements()
+{
+    document.getElementById("addNewElementInsertDropdown").innerHTML = "";
+
+    var elementsSaved = V_Storage.getItem("elements");
+    window.alert(elementsSaved);
+    
+    if (elementsSaved != undefined || elementsSaved != "" || elementsSaved != null)
+    {
+        var jsonObj = JSON.parse(elementsSaved);
+        for (i = 0; i < jsonObj.element.length; i++)
+        {
+            document.getElementById("addNewElementInsertDropdown").innerHTML += '<li id="element' + (i + 1) + '">' + jsonObj.element[i].name + '</li>';
+        }
+    }
 }
 
 function Clear()
@@ -110,7 +170,7 @@ function Import(_file)
                 listInUse = listsCreated[listsCreatedNames.indexOf(listParameters[0])];
             }
 
-            var newElement = AddNewElement(listParameters[1], listInUse);
+            var newElement = AddNewElement(listParameters[1], listParameters[3], listInUse);
 
             if (listParameters[2].includes("oui"))
             {
@@ -145,7 +205,7 @@ function Export(_Name)
 
 function CreateCSV()
 {
-    var resultCSV = 'List_Name;Element_Name;Element_Present\n';
+    var resultCSV = 'List_Name;Element_Name;Element_Present;Element_Email\n';
 
     var lists = V_Grid.getElementsByTagName("ul");
 
@@ -159,12 +219,14 @@ function CreateCSV()
 
             if(elements[j].getElementsByTagName("input")[0].checked)
             {
-                resultCSV += ";oui\n";
+                resultCSV += ";oui";
             }
             else
             {
-                resultCSV += ";non\n";
+                resultCSV += ";non";
             }
+
+            resultCSV += elements[j].getElementById(lists[i].id + "_email" + (j + 1))[0].value + "\n";
         }
     }
 
@@ -354,63 +416,36 @@ function ChangeTitle(_NameElement, _NameInput)
     SaveGrid();
 }
 
-function AddElement(_toAdd)
+function AddElement(_toAddName, _toAddEmail)
 {
-    if (_toAdd == "")
+    if (_toAddName == "")
     {
         switch (V_Language)
         {
             case "fr":
-                document.getElementById("addNewElementError").innerHTML = "Oups! Ecris quelque chose d'abord!";
+                document.getElementById("addNewElementError").innerHTML = "Oups! Ecris un nom d'abord!";
                 break;
             default:
-                document.getElementById("addNewElementError").innerHTML = "Oops! Write something first!";
+                document.getElementById("addNewElementError").innerHTML = "Oops! Write a name first!";
         }
     }
     else if (V_ListToAddNewElement == null || V_ListToAddNewElement == undefined)
     {
-        window.alert("hum... the list doesn't exist...");
+        window.alert("hum... the list doesn't exist...  // AddElement");
     }
     else
     {
+        if (_toAddEmail == "")
+        {
+            _toAddEmail = "@";
+        }
+
         // reset the "Add" text 
-        document.getElementById("addNewElementText").value = "";
+        document.getElementById("addNewElementName").value = "";
+        document.getElementById("addNewElementEmail").value = "";
         document.getElementById("addNewElementError").innerHTML = "";
 
-        // number of elements in the list
-        var nbOfElements = V_ListToAddNewElement.getElementsByTagName("li").length;
-
-        // add element in the list
-        var newLI = document.createElement("li");
-        var newBox = document.createElement("input");
-        var newLabel = document.createElement("label");
-        var newA = document.createElement("a");
-        var newI = document.createElement("i");
-
-        newA.appendChild(newI);
-        newLI.appendChild(newBox);
-        newLI.appendChild(newLabel);
-        newLI.appendChild(newA);
-        V_ListToAddNewElement.appendChild(newLI);
-
-        newLI.setAttribute("class", "collection-item ui-sortable-handle");
-        newLI.setAttribute("id", V_ListToAddNewElement.id + "_element" + (nbOfElements + 1));
-
-        newBox.setAttribute("type", "checkbox");
-        newBox.setAttribute("class", "filled-in");
-        newBox.setAttribute("id", V_ListToAddNewElement.id + "_check" + (nbOfElements + 1));
-        newBox.setAttribute("value", _toAdd);
-
-        newLabel.setAttribute("for", V_ListToAddNewElement.id + "_check" + (nbOfElements + 1));
-        newLabel.setAttribute("id", V_ListToAddNewElement.id + "_label" + (nbOfElements + 1));
-        newLabel.innerHTML = _toAdd;
-
-        newA.setAttribute("href", "#!");
-        newA.setAttribute("class", "secondary-content");
-        newA.setAttribute("onclick", "EraseElement(" + V_ListToAddNewElement.id + "_element" + (nbOfElements + 1) + ", " + V_ListToAddNewElement.id + ")");
-
-        newI.setAttribute("class", "material-icons");
-        newI.innerHTML = "delete";
+        AddNewElement(_toAddName, _toAddEmail, V_ListToAddNewElement);
 
         $('#addNewElement').modal("close");
         
@@ -418,59 +453,92 @@ function AddElement(_toAdd)
 
         SaveGrid();
 
+        //Save each time a checkbox is checked
         $(".filled-in").on("click", function () {
             SaveGrid();
+        });
+
+        //Initialize dropdown
+        $('.dropdown-button').dropdown({
+            inDuration: 300,
+            outDuration: 225,
+            constrain_width: false,
+            hover: true, // Activate on hover
+            gutter: 0, // Spacing from edge
+            belowOrigin: false,
+            alignment: 'right' // Displays dropdown with edge aligned to the left of button
         });
     }
 }
 
-function AddNewElement(_toAdd, _list)
+function AddNewElement(_toAddName, _toAddEmail, _list)
 {
     if (_list == null || _list == undefined)
     {
-        window.alert("hum... the list doesn't exist...");
+        window.alert("hum... the list doesn't exist...  // AddNewElement");
     }
     else 
     {
         // number of elements in the list
-        var nbOfElements = _list.getElementsByTagName("li").length;
+        var nbOfElements = _list.getElementsByClassName("collection-item").length;
 
         // add element in the list
         var newLI = document.createElement("li");
         var newBox = document.createElement("input");
         var newLabel = document.createElement("label");
-        var newA = document.createElement("a");
-        var newI = document.createElement("i");
+        var newButton = document.createElement("a");
+        var newDropdown = document.createElement("ul");
+        var newHidden = document.createElement("input");
 
-        newA.appendChild(newI);
         newLI.appendChild(newBox);
         newLI.appendChild(newLabel);
-        newLI.appendChild(newA);
+        newLI.appendChild(newButton);
+        newLI.appendChild(newDropdown);
+        newLI.appendChild(newHidden);
         _list.appendChild(newLI);
 
-        newLI.setAttribute("class", "collection-item ui-sortable-handle");
+        newLI.setAttribute("class", "collection-item ui-sortable-handle AppZbisRDV_ListsElements");
         newLI.setAttribute("id", _list.id + "_element" + (nbOfElements + 1));
 
         newBox.setAttribute("type", "checkbox");
         newBox.setAttribute("class", "filled-in");
         newBox.setAttribute("id", _list.id + "_check" + (nbOfElements + 1));
-        newBox.setAttribute("value", _toAdd);
+        newBox.setAttribute("value", _toAddName);
 
         newLabel.setAttribute("for", _list.id + "_check" + (nbOfElements + 1));
         newLabel.setAttribute("id", _list.id + "_label" + (nbOfElements + 1));
-        newLabel.innerHTML = _toAdd;
+        newLabel.innerHTML = _toAddName;
+        
+        newButton.setAttribute("class", "secondary-content dropdown-button");
+        newButton.setAttribute("data-activates", _list.id + "_dropdown" + (nbOfElements + 1));
+        newButton.innerHTML = '<i class="material-icons">menu</i>';
 
-        newA.setAttribute("href", "#!");
-        newA.setAttribute("class", "secondary-content");
-        newA.setAttribute("onclick", "EraseElement(" + _list.id + "_element" + (nbOfElements + 1) + ", " + _list.id + ")");
+        newDropdown.setAttribute("id", _list.id + "_dropdown" + (nbOfElements + 1));
+        newDropdown.setAttribute("class", "dropdown-content");
+        newDropdown.innerHTML =
+        '<li><a>' + _toAddEmail + '</a></li>' +
+        '<li><a onclick="EraseElement(' + _list.id + '_element' + (nbOfElements + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a></li>';
 
-        newI.setAttribute("class", "material-icons");
-        newI.innerHTML = "delete";
-
+        newHidden.setAttribute("type", "hidden");
+        newHidden.setAttribute("id", _list.id + "_email" + (nbOfElements + 1));
+        newHidden.setAttribute("value", _toAddEmail);
+        
         SaveGrid();
-
+        
+        //Save each time a checkbox is checked
         $(".filled-in").on("click", function () {
             SaveGrid();
+        });
+
+        //Initialize dropdown
+        $('.dropdown-button').dropdown({
+            inDuration: 300,
+            outDuration: 225,
+            constrain_width: false,
+            hover: true, // Activate on hover
+            gutter: 0, // Spacing from edge
+            belowOrigin: false,
+            alignment: 'right' // Displays dropdown with edge aligned to the left of button
         });
 
         return document.getElementById(_list.id + '_element' + (nbOfElements + 1));
@@ -485,7 +553,7 @@ function EraseElement(_toErase, _list)
     }
     else if (_list == null || _list == undefined)
     {
-        window.alert("hum... the list doesn't exist...");
+        window.alert("hum... the list doesn't exist...  // EraseElement");
     }
     else
     {
@@ -496,7 +564,6 @@ function EraseElement(_toErase, _list)
         {
             if (elements[i] == _toErase)
             {
-                V_Storage.removeItem(elements[i].id);
                 _list.removeChild(elements[i]);
                 ReorganiseList(_list);
                 break;
@@ -507,7 +574,7 @@ function EraseElement(_toErase, _list)
 
 function ReorganiseList(_list)
 {
-    var elementsNodeList = _list.getElementsByTagName("li");
+    var elementsNodeList = _list.getElementsByClassName("AppZbisRDV_ListsElements");
 
     document.getElementById("debug").innerHTML = "";
 
@@ -519,14 +586,19 @@ function ReorganiseList(_list)
     {
         elements[i].id = _list.id + "_element" + (i + 1);
 
-        var isChecked = elements[i].getElementsByTagName("input")[0].checked;
+        elements[i].getElementsByTagName("input")[0].setAttribute("id", _list.id + "_check" + (i + 1));
 
-        elements[i].innerHTML =
-        '   <input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (i + 1) + '" value="' + elements[i].getElementsByTagName("input")[0].value + '" />' +
-        '   <label for="' + _list.id + '_check' + (i + 1) + '" id="' + _list.id + '_label' + (i + 1) + '">' + elements[i].getElementsByTagName("input")[0].value + '</label> ' +
-        '   <a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (i + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>';
+        elements[i].getElementsByTagName("label")[0].setAttribute("for", _list.id + "_check" + (i + 1));
+        elements[i].getElementsByTagName("label")[0].setAttribute("id", _list.id + "_label" + (i + 1));
 
-        elements[i].getElementsByTagName("input")[0].checked = isChecked;
+        elements[i].getElementsByTagName("a")[0].setAttribute("data-activates", _list.id + "_dropdown" + (i + 1));
+
+        elements[i].getElementsByTagName("ul")[0].setAttribute("id", _list.id + "_dropdown" + (i + 1));
+        elements[i].getElementsByTagName("ul")[0].innerHTML =
+        '<li>' + elements[i].getElementsByTagName("ul")[0].getElementsByTagName("li")[0].innerHTML + '</li>' +
+        '<li><a onclick="EraseElement(' + _list.id + '_element' + (i + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a></li>';
+
+        elements[i].getElementsByTagName("input")[1].setAttribute("id", _list.id + "_email" + (i + 1));
     }
 
     SaveGrid();
@@ -597,7 +669,9 @@ function ChangeToBaguette()
     document.getElementById("createNewList").innerHTML = "Créer";
 
     //Add element modal
-    document.getElementById("addNewElementText").placeholder = "Ajouter un nouvel élément à cette liste...";
+    document.getElementById("addNewElement").getElementsByTagName("h4")[0].innerHTML = "Ajouter un nouvel élément...";
+    document.getElementById("addNewElementName").placeholder = "Nom...";
+    document.getElementById("addNewElementEmail").placeholder = "Adresse mail...";
     document.getElementById("createNewElement").innerHTML = "Créer";
 
     //Remove list modal
@@ -635,7 +709,8 @@ function ChangeToRosbeef()
     // List //
     var lists = document.getElementsByClassName("AppZbisRDV_List");
 
-    for (i = 0; i < lists.length; i++) {
+    for (i = 0; i < lists.length; i++)
+    {
         var arrayOfA = lists[i].getElementsByTagName("a");
 
         arrayOfA[arrayOfA.length - 2].innerHTML = 'Add';

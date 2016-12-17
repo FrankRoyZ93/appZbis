@@ -54,9 +54,33 @@
     <!-- Add element modal -->
     <div id="addNewElement" class="modal">
         <div class="modal-content">
+            <h4>Add new element...</h4>
             <div class="row">
                 <div class="col s12">
-                    <input type="text" id="addNewElementText" maxlength="35" placeholder="Add new element in this list..." />
+                    <ul class="tabs">
+                        <li class="tab col s6"><a class="active" href="#addNewElementCreateNew">Create New</a></li>
+                        <li class="tab col s6"><a href="#addNewElementInsert">Insert</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div id="addNewElementCreateNew" class="col s12">
+                <div class="row">
+                    <div class="col s12">
+                        <input type="text" id="addNewElementName" maxlength="35" placeholder="Name..." />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <input type="text" id="addNewElementEmail" maxlength="50" placeholder="Email..." />
+                    </div>
+                </div>
+            </div>
+            <div id="addNewElementInsert" class="col s12">
+                <div class="row">
+                    <div class="col s12">
+                        <a class="dropdown-button btn" data-activates="addNewElementInsertDropdown">Choose one...</a>
+                        <ul class="dropdown-content" id="addNewElementInsertDropdown"></ul>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -173,6 +197,7 @@
         document.addEventListener("deviceready", Load, false);
         $(document).ready(function () {
             $('.modal').modal();
+            $('ul.tabs').tabs();
         });
     </script>
 
@@ -184,7 +209,7 @@
         });
 
         $("#createNewElement").on("click", function () {
-            AddElement($("#addNewElementText").val());
+            AddElement($("#addNewElementName").val(), $("#addNewElementEmail").val());
             return false;
         });
 
