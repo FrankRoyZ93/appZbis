@@ -58,8 +58,8 @@
             <div class="row">
                 <div class="col s12">
                     <ul class="tabs">
-                        <li class="tab col s6"><a class="active" href="#addNewElementCreateNew">Create New</a></li>
-                        <li class="tab col s6"><a href="#addNewElementInsert">Insert</a></li>
+                        <li class="tab col s6"><a id="addNewElementCreateNewTab" class="active" href="#addNewElementCreateNew">Create New</a></li>
+                        <li class="tab col s6"><a id="addNewElementInsertTab" href="#addNewElementInsert">Insert</a></li>
                     </ul>
                 </div>
             </div>
@@ -77,9 +77,13 @@
             </div>
             <div id="addNewElementInsert" class="col s12">
                 <div class="row">
-                    <div class="col s12">
-                        <a class="dropdown-button btn" data-activates="addNewElementInsertDropdown">Choose one...</a>
+                    <div class="col s4">
+                        <a class="Insert_dropdown-button btn" data-activates="addNewElementInsertDropdown">Choose one...</a>
                         <ul class="dropdown-content" id="addNewElementInsertDropdown"></ul>
+                    </div>
+                    <div class="col s8">
+                        Name : <a id="nameToInsert"></a>
+                        Email : <a id="emailToInsert"></a>
                     </div>
                 </div>
             </div>
@@ -209,7 +213,14 @@
         });
 
         $("#createNewElement").on("click", function () {
-            AddElement($("#addNewElementName").val(), $("#addNewElementEmail").val());
+            if ($("#addNewElementCreateNewTab").hasClass("active"))
+            {
+                AddElement($("#addNewElementName").val(), $("#addNewElementEmail").val());
+            }
+            else if ($("#addNewElementInsertTab").hasClass("active"))
+            {
+                AddElement($("#nameToInsert").html(), $("#emailToInsert").html());
+            }
             return false;
         });
 

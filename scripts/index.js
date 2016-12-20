@@ -67,6 +67,16 @@ function Load()
         alignment: 'right' // Displays dropdown with edge aligned to the left of button
     });
 
+    $('.Insert_dropdown-button').dropdown({
+        inDuration: 300,
+        outDuration: 225,
+        constrain_width: false,
+        hover: true, // Activate on hover
+        gutter: 0, // Spacing from edge
+        belowOrigin: true,
+        alignment: 'right' // Displays dropdown with edge aligned to the right of button
+    });
+
     CheckLanguage();
 }
 
@@ -86,25 +96,29 @@ function SaveGrid()
     V_Storage.setItem("checkboxes", JSON.stringify(checked));
 
     var elementsInList = document.getElementsByClassName("AppZbisRDV_ListsElements");
-    var elements = '{ "element" : [ ';
-    
-    var names = [];
+
+    var namesIn_elementsInList = [];
+    var emailsIn_elementsInList = [];
 
     for (i = 0; i < elementsInList.length; i++)
     {
-        if (names.indexOf(elementsInList[i].getElementsByTagName("label")[0].innerHTML) == -1)
+        if (namesIn_elementsInList.indexOf(elementsInList[i].getElementsByTagName("label")[0].innerHTML) === -1)
         {
-            names.push(elementsInList[i].getElementsByTagName("label")[0].innerHTML);
-
-
-            elements += '{ "name" : "' + elementsInList[i].getElementsByTagName("label")[0].innerHTML + '", "email" :"' + elementsInList[i].getElementsByTagName("input")[1].value + '" }';
-            
-            if (i +1 < elementsInList.length)
-            {
-                elements +=', ';
-            }
+            namesIn_elementsInList.push(elementsInList[i].getElementsByTagName("label")[0].innerHTML);
+            emailsIn_elementsInList.push(elementsInList[i].getElementsByTagName("input")[1].value);
         }
+    }
+    
+    var elements = '{ "element" : [ ';
+    
+    for (i = 0; i < namesIn_elementsInList.length; i++)
+    {
+        elements += '{ "name" : "' + namesIn_elementsInList[i] + '", "email" :"' + emailsIn_elementsInList[i] + '" }';
         
+        if (i + 1 < namesIn_elementsInList.length)
+        {
+            elements +=', ';
+        }    
     }
     elements += ' ] }';
     elements = elements.replace(/(\r\n|\n|\r)/gm, "");
@@ -119,14 +133,22 @@ function RefreshElements()
     document.getElementById("addNewElementInsertDropdown").innerHTML = "";
 
     var elementsSaved = V_Storage.getItem("elements");
-    window.alert(elementsSaved);
     
-    if (elementsSaved != undefined || elementsSaved != "" || elementsSaved != null)
+    if (elementsSaved !== null)
     {
         var jsonObj = JSON.parse(elementsSaved);
+        var i;
         for (i = 0; i < jsonObj.element.length; i++)
         {
-            document.getElementById("addNewElementInsertDropdown").innerHTML += '<li id="element' + (i + 1) + '">' + jsonObj.element[i].name + '</li>';
+            var newLi = document.createElement("li");
+            var newA = document.createElement("a");
+
+            document.getElementById("addNewElementInsertDropdown").appendChild(newLi);
+            newLi.appendChild(newA);
+
+            newLi.id = "element" + (i + 1);
+            newA.setAttribute("onclick", 'DisplayElementToInsert("' + jsonObj.element[i].name + '", "' + jsonObj.element[i].email + '")');
+            newA.innerHTML = jsonObj.element[i].name;
         }
     }
 }
@@ -152,6 +174,7 @@ function Import(_file)
         var listsCreatedNames = [];
         var listsCreated = [];
 
+        var i;
         for (i = 1; i < listsToLoad.length; i++)
         {
             var listParameters = listsToLoad[i].split(";");
@@ -208,11 +231,11 @@ function CreateCSV()
     var resultCSV = 'List_Name;Element_Name;Element_Present;Element_Email\n';
 
     var lists = V_Grid.getElementsByTagName("ul");
-
+    var i;
     for (i = 0; i < lists.length; i++)
     {
         var elements = lists[i].getElementsByTagName("li");
-
+        var j;
         for (j = 0; j < elements.length; j++)
         {
             resultCSV += lists[i].parentNode.getElementsByTagName("h4")[0].innerHTML + ";" + elements[j].getElementsByTagName("label")[0].innerHTML;
@@ -618,7 +641,8 @@ function RemoveList()
     {
         var lists = V_Grid.getElementsByTagName("ul");
 
-        // We will now check in the grid where '_list' is located		
+        // We will now check in the grid where '_list' is located
+        var i;
         for (i = 0; i < lists.length; i++)
         {
             if (lists[i] == V_ListToRemove)
@@ -641,6 +665,12 @@ function RemoveList()
 function CheckElement(_element, _value)
 {
     $(_element.getElementsByTagName("input")[0]).attr("checked", _value);
+}
+
+function DisplayElementToInsert(_elementName, _elementEmail)
+{
+    document.getElementById("nameToInsert").innerHTML = _elementName;
+    document.getElementById("emailToInsert").innerHTML = _elementEmail;
 }
 
 // **************************** //
@@ -694,7 +724,7 @@ function ChangeToBaguette()
 
     // List //
     var lists = document.getElementsByClassName("AppZbisRDV_List");
-
+    var i;
     for (i = 0; i < lists.length; i++)
     {
         var arrayOfA = lists[i].getElementsByTagName("a");
@@ -708,7 +738,7 @@ function ChangeToRosbeef()
 {
     // List //
     var lists = document.getElementsByClassName("AppZbisRDV_List");
-
+    var i;
     for (i = 0; i < lists.length; i++)
     {
         var arrayOfA = lists[i].getElementsByTagName("a");
