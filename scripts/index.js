@@ -15,12 +15,13 @@ var V_ListToRemove;
 // Language of the browser
 var V_Language;
 
-//// Fucntions ////
+//// Functions ////
 
 // ***************************** //
 // **** Load/Save functions **** //
 // ***************************** //
 
+// Called whan the application load : instantiate the grid
 function Load()
 {
     V_Storage = window.localStorage;
@@ -80,6 +81,7 @@ function Load()
     CheckLanguage();
 }
 
+// Save all elements in the grid
 function SaveGrid()
 {
     V_Grid = document.getElementById("listsGrid");
@@ -109,8 +111,7 @@ function SaveGrid()
         }
     }
     
-    var elements = '{ "element" : [ ';
-    
+    var elements = '{ "element" : [ ';    
     for (i = 0; i < namesIn_elementsInList.length; i++)
     {
         elements += '{ "name" : "' + namesIn_elementsInList[i] + '", "email" :"' + emailsIn_elementsInList[i] + '" }';
@@ -128,6 +129,7 @@ function SaveGrid()
     RefreshElements();
 }
 
+// Gets all elements and put them in the insert dropbox
 function RefreshElements()
 {
     document.getElementById("addNewElementInsertDropdown").innerHTML = "";
@@ -153,6 +155,7 @@ function RefreshElements()
     }
 }
 
+// Clear everything stored in memory
 function Clear()
 {
     V_Storage.clear();
@@ -163,6 +166,7 @@ function Clear()
 // **** Import/Export functions **** //
 // ********************************* //
 
+// Import elements form a csv file
 function Import(_file)
 {
     var reader = new FileReader();
@@ -209,6 +213,7 @@ function Import(_file)
     reader.readAsText(_file);
 }
 
+// Export all lists and elements in a csv file
 function Export(_Name)
 {
     var element = document.createElement('a');
@@ -226,6 +231,7 @@ function Export(_Name)
     document.body.removeChild(element);
 }
 
+// Create the exported csv content
 function CreateCSV()
 {
     var resultCSV = 'List_Name;Element_Name;Element_Present;Element_Email\n';
@@ -260,6 +266,7 @@ function CreateCSV()
 // **** Grid functions **** //
 // ************************ //
 
+// Create a new list
 function CreateList(_name)
 {
     if (_name == "")
@@ -340,6 +347,7 @@ function CreateList(_name)
     }
 }
 
+// Reorganise the grid (list numbers, etc.)
 function ReorganiseGrid()
 {
     if (V_Grid == null || V_Grid == undefined)
@@ -405,6 +413,7 @@ function ReorganiseGrid()
 // **** List functions **** //
 // ************************ //
 
+// Set the list where a new element will be added after the user sets parameters
 function SetListToAddNewElement(_list)
 {
     V_ListToAddNewElement = _list;
@@ -412,6 +421,7 @@ function SetListToAddNewElement(_list)
     $('#addNewElement').modal("open");
 }
 
+// Set the list to remove after the user sets parameters
 function SetListToRemove(_list)
 {
     V_ListToRemove = _list;
@@ -420,6 +430,7 @@ function SetListToRemove(_list)
     $('#removeList').modal("open");
 }
 
+// Sets up the title changer for the user
 function EnterNewTitle(_NameElement, _NameInput)
 {
     $("#" + _NameElement.id).hide();
@@ -429,6 +440,7 @@ function EnterNewTitle(_NameElement, _NameInput)
     _NameInput.focus();
 }
 
+// Give a new title to a list
 function ChangeTitle(_NameElement, _NameInput)
 {
     _NameElement.innerHTML = _NameInput.value;
@@ -439,6 +451,7 @@ function ChangeTitle(_NameElement, _NameInput)
     SaveGrid();
 }
 
+// Add an element to V_ListToAddNewElement (via UI)
 function AddElement(_toAddName, _toAddEmail)
 {
     if (_toAddName == "")
@@ -456,15 +469,15 @@ function AddElement(_toAddName, _toAddEmail)
     {
         window.alert("hum... the list doesn't exist...  // AddElement");
     }
-    else if (IsElementInList(V_ListToAddNewElement, _toAddName))
+    else if (IsNameInList(V_ListToAddNewElement, _toAddName))
     {
         switch (V_Language)
         {
             case "fr":
-                document.getElementById("addNewElementError").innerHTML = "Cet élément est déjà dans cette liste!";
+                document.getElementById("addNewElementError").innerHTML = "Ce nom figure déjà dans cette liste!";
                 break;
             default:
-                document.getElementById("addNewElementError").innerHTML = "This element is already in this list!";
+                document.getElementById("addNewElementError").innerHTML = "This name is already in this list!";
         }
     }
     else
@@ -505,6 +518,7 @@ function AddElement(_toAddName, _toAddEmail)
     }
 }
 
+// Add a new element to _list
 function AddNewElement(_toAddName, _toAddEmail, _list)
 {
     if (_list == null || _list == undefined)
@@ -579,6 +593,7 @@ function AddNewElement(_toAddName, _toAddEmail, _list)
     }
 }
 
+// Remove an element from _list
 function EraseElement(_toErase, _list)
 {
     if (_toErase == null || _toErase == undefined)
@@ -606,6 +621,7 @@ function EraseElement(_toErase, _list)
     }
 }
 
+// Reorganise the list (numbers, etc.)
 function ReorganiseList(_list)
 {
     var elementsNodeList = _list.getElementsByClassName("AppZbisRDV_ListsElements");
@@ -638,6 +654,7 @@ function ReorganiseList(_list)
     SaveGrid();
 }
 
+// Remove V_ListToRemove
 function RemoveList()
 {
     if (V_ListToRemove == null || V_ListToRemove == undefined)
@@ -673,18 +690,21 @@ function RemoveList()
     }
 }
 
+// Checks or unchecks the checkbox of an element
 function CheckElement(_element, _value)
 {
     $(_element.getElementsByTagName("input")[0]).attr("checked", _value);
 }
 
+// 
 function DisplayElementToInsert(_elementName, _elementEmail)
 {
     document.getElementById("nameToInsert").innerHTML = _elementName;
     document.getElementById("emailToInsert").innerHTML = _elementEmail;
 }
 
-function IsElementInList(_list, _elementName)
+// Check if _elementName is in _list
+function IsNameInList(_list, _elementName)
 {
     var listElements = _list.getElementsByClassName("AppZbisRDV_ListsElements");
     var listElementsNames = [];
@@ -703,6 +723,7 @@ function IsElementInList(_list, _elementName)
 // **** Language functions **** //
 // **************************** //
 
+// Verify the user language
 function CheckLanguage()
 {
     V_Language = navigator.language || navigator.userLanguage;
@@ -717,6 +738,7 @@ function CheckLanguage()
     }
 }
 
+//
 function ChangeToBaguette()
 {
     // Modal //
@@ -764,6 +786,7 @@ function ChangeToBaguette()
     }
 }
 
+//
 function ChangeToRosbeef()
 {
     // List //
@@ -782,6 +805,7 @@ function ChangeToRosbeef()
 // **** Utility functions **** //
 // *************************** //
 
+// Check if obj is in list
 function Contains(obj, list)
 {
     var i;
