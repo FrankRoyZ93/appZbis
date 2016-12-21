@@ -77,13 +77,13 @@
             </div>
             <div id="addNewElementInsert" class="col s12">
                 <div class="row">
-                    <div class="col s4">
-                        <a class="Insert_dropdown-button btn" data-activates="addNewElementInsertDropdown">Choose one...</a>
+                    <div class="col s3">
+                        <a id="InsertElementDropdown" class="Insert_dropdown-button btn" data-activates="addNewElementInsertDropdown">Choose one...</a>
                         <ul class="dropdown-content" id="addNewElementInsertDropdown"></ul>
                     </div>
-                    <div class="col s8">
-                        Name : <a id="nameToInsert"></a>
-                        Email : <a id="emailToInsert"></a>
+                    <div id="InsertElementInfo" class="col s9">
+                        <p>Name : <a id="nameToInsert"></a></p>
+                        <p>Email : <a id="emailToInsert"></a></p>
                     </div>
                 </div>
             </div>
@@ -92,7 +92,7 @@
                     <p id="addNewElementError"></p>
                 </div>
                 <div class="col s6">
-                    <button id="createNewElement" class="waves-effect waves-green btn-flat">Create</button>
+                    <button id="createNewElement" class="waves-effect waves-green btn-flat">Validate</button>
                 </div>
             </div>
         </div>

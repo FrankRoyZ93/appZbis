@@ -284,7 +284,7 @@ function CreateList(_name)
         document.getElementById("addNewListError").innerHTML = "";
 
         // number of lists in the grid
-        var nbOfElements = V_Grid.getElementsByTagName("ul").length;
+        var nbOfElements = V_Grid.getElementsByClassName("AppZbisRDV_List").length;
 
         // add list in the grid
         V_Grid.innerHTML +=
@@ -456,6 +456,17 @@ function AddElement(_toAddName, _toAddEmail)
     {
         window.alert("hum... the list doesn't exist...  // AddElement");
     }
+    else if (IsElementInList(V_ListToAddNewElement, _toAddName))
+    {
+        switch (V_Language)
+        {
+            case "fr":
+                document.getElementById("addNewElementError").innerHTML = "Cet élément est déjà dans cette liste!";
+                break;
+            default:
+                document.getElementById("addNewElementError").innerHTML = "This element is already in this list!";
+        }
+    }
     else
     {
         if (_toAddEmail == "")
@@ -471,7 +482,7 @@ function AddElement(_toAddName, _toAddEmail)
         AddNewElement(_toAddName, _toAddEmail, V_ListToAddNewElement);
 
         $('#addNewElement').modal("close");
-        
+
         V_ListToAddNewElement = null;
 
         SaveGrid();
@@ -673,6 +684,21 @@ function DisplayElementToInsert(_elementName, _elementEmail)
     document.getElementById("emailToInsert").innerHTML = _elementEmail;
 }
 
+function IsElementInList(_list, _elementName)
+{
+    var listElements = _list.getElementsByClassName("AppZbisRDV_ListsElements");
+    var listElementsNames = [];
+    var i;
+    for (i = 0; i < listElements.length; i++)
+    {
+        console.log(listElements[i].id);
+        console.log(listElements[i].getElementsByTagName("label")[0].innerHTML);
+        listElementsNames.push(listElements[i].getElementsByTagName("label")[0].innerHTML);
+    }
+
+    return Contains(_elementName, listElementsNames);
+}
+
 // **************************** //
 // **** Language functions **** //
 // **************************** //
@@ -700,9 +726,13 @@ function ChangeToBaguette()
 
     //Add element modal
     document.getElementById("addNewElement").getElementsByTagName("h4")[0].innerHTML = "Ajouter un nouvel élément...";
+    document.getElementById("addNewElementCreateNewTab").innerHTML = "Créer élément";
+    document.getElementById("addNewElementInsertTab").innerHTML = "Insérer élément";
     document.getElementById("addNewElementName").placeholder = "Nom...";
     document.getElementById("addNewElementEmail").placeholder = "Adresse mail...";
-    document.getElementById("createNewElement").innerHTML = "Créer";
+    document.getElementById("createNewElement").innerHTML = "Valider";
+    document.getElementById("InsertElementDropdown").innerHTML = "Sélect...";
+    document.getElementById("InsertElementInfo").innerHTML = '<p>Nom : <a id="nameToInsert"></a></p><p>Adresse mail : <a id="emailToInsert"></a></p>';
 
     //Remove list modal
     document.getElementById("RemoveListYesButton").innerHTML = "Oui";
