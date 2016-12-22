@@ -33,7 +33,7 @@ function Load()
     {
         V_Grid.innerHTML = grid;
 
-        var checkboxes = $(V_Grid).find(":checkbox");
+        var checkboxes = V_Grid.getElementsByClassName("checkbox");
         var isChecked = JSON.parse(V_Storage.getItem("checkboxes"));
 
         var i;
@@ -62,7 +62,7 @@ function Load()
         inDuration: 300,
         outDuration: 225,
         constrain_width: false,
-        hover: true, // Activate on hover
+        hover: false,
         gutter: 0, // Spacing from edge
         belowOrigin: false,
         alignment: 'right' // Displays dropdown with edge aligned to the left of button
@@ -72,7 +72,7 @@ function Load()
         inDuration: 300,
         outDuration: 225,
         constrain_width: false,
-        hover: true, // Activate on hover
+        hover: false,
         gutter: 0, // Spacing from edge
         belowOrigin: true,
         alignment: 'right' // Displays dropdown with edge aligned to the right of button
@@ -86,7 +86,7 @@ function SaveGrid()
 {
     V_Grid = document.getElementById("listsGrid");
     V_Storage.setItem("Grid", V_Grid.innerHTML);
-    var checkboxes = $(V_Grid).find(":checkbox");
+    var checkboxes = V_Grid.getElementsByClassName("checkbox");
     var checked = [];
 
     var i;
@@ -303,7 +303,8 @@ function CreateList(_name)
         '               <input id="list' + (nbOfElements + 1) + 'ChangeTitle" type="text" onblur="ChangeTitle(list' + (nbOfElements + 1) + 'Name, list' + (nbOfElements + 1) + 'ChangeTitle)" />' +
         '           </div>' +
         '       </div>' +
-        '       <ul class="collection ui-sortable sortable" id="list' + (nbOfElements + 1) + '">' +
+        '       <ul class="collection ui-sortable sortable AppZbisRDV_ElementList" id="list' + (nbOfElements + 1) + '">' +
+        '       <li class="AppZbisRDV_EmptyListPlaceholder"><i>This list is empty for now</i></li>' +
         '       </ul>' +
         '       <!-- Add area -->' +
         '       <div class="row">' +  
@@ -374,7 +375,7 @@ function ReorganiseGrid()
 
         for (i = 0; i < lists.length; i++)
         {
-            lists[i].getElementsByTagName("ul")[0].id = 'list' + (i + 1);
+            lists[i].getElementsByClassName("AppZbisRDV_ElementList")[0].id = 'list' + (i + 1);
 
             var listName = lists[i].getElementsByTagName("h4")[0].innerHTML;
 
@@ -402,7 +403,7 @@ function ReorganiseGrid()
                         '<a class="waves-effect waves-light btn red" id="list' + (i + 1) + 'DeleteButton" onclick="SetListToRemove(list' + (i + 1) + ')">Delete</a>';
             }
 
-            ReorganiseList(lists[i].getElementsByTagName("ul")[0]);
+            ReorganiseList(lists[i].getElementsByClassName("AppZbisRDV_ElementList")[0]);
         }
 
         SaveGrid();
@@ -510,7 +511,7 @@ function AddElement(_toAddName, _toAddEmail)
             inDuration: 300,
             outDuration: 225,
             constrain_width: false,
-            hover: true, // Activate on hover
+            hover: false,
             gutter: 0, // Spacing from edge
             belowOrigin: false,
             alignment: 'right' // Displays dropdown with edge aligned to the left of button
@@ -527,6 +528,21 @@ function AddNewElement(_toAddName, _toAddEmail, _list)
     }
     else 
     {
+        //Remove Place Holders
+        if (_list.getElementsByClassName("AppZbisRDV_EmptyListPlaceholder").length > 0)
+        {
+            var placeholdersToRemove = [];
+            var i;
+            for (i = 0; i < _list.getElementsByClassName("AppZbisRDV_EmptyListPlaceholder").length; i++)
+            {
+                placeholdersToRemove.push(_list.getElementsByClassName("AppZbisRDV_EmptyListPlaceholder")[i]);
+            }
+            for (i = 0; i < placeholdersToRemove.length; i++)
+            {
+                _list.removeChild(placeholdersToRemove[i]);
+            }
+        }
+
         // number of elements in the list
         var nbOfElements = _list.getElementsByClassName("collection-item").length;
 
@@ -557,7 +573,7 @@ function AddNewElement(_toAddName, _toAddEmail, _list)
         newLabel.setAttribute("id", _list.id + "_label" + (nbOfElements + 1));
         newLabel.innerHTML = _toAddName;
         
-        newButton.setAttribute("class", "secondary-content dropdown-button");
+        newButton.setAttribute("class", "secondary-content dropdown-button btn");
         newButton.setAttribute("data-activates", _list.id + "_dropdown" + (nbOfElements + 1));
         newButton.innerHTML = '<i class="material-icons">menu</i>';
 
@@ -583,7 +599,7 @@ function AddNewElement(_toAddName, _toAddEmail, _list)
             inDuration: 300,
             outDuration: 225,
             constrain_width: false,
-            hover: true, // Activate on hover
+            hover: false,
             gutter: 0, // Spacing from edge
             belowOrigin: false,
             alignment: 'right' // Displays dropdown with edge aligned to the left of button
@@ -628,27 +644,34 @@ function ReorganiseList(_list)
 
     document.getElementById("debug").innerHTML = "";
 
-    // Convert elementsNodeList to an array
-    var elements = [];
-    for (var i = elementsNodeList.length; i--; elements.unshift(elementsNodeList[i]));
-
-    for (i = 0; i < elements.length; i++)
+    if (elementsNodeList.length > 0)
     {
-        elements[i].id = _list.id + "_element" + (i + 1);
+        // Convert elementsNodeList to an array
+        var elements = [];
+        for (var i = elementsNodeList.length; i--; elements.unshift(elementsNodeList[i]));
 
-        elements[i].getElementsByTagName("input")[0].setAttribute("id", _list.id + "_check" + (i + 1));
+        for (i = 0; i < elements.length; i++)
+        {
+            elements[i].id = _list.id + "_element" + (i + 1);
 
-        elements[i].getElementsByTagName("label")[0].setAttribute("for", _list.id + "_check" + (i + 1));
-        elements[i].getElementsByTagName("label")[0].setAttribute("id", _list.id + "_label" + (i + 1));
+            elements[i].getElementsByTagName("input")[0].setAttribute("id", _list.id + "_check" + (i + 1));
 
-        elements[i].getElementsByTagName("a")[0].setAttribute("data-activates", _list.id + "_dropdown" + (i + 1));
+            elements[i].getElementsByTagName("label")[0].setAttribute("for", _list.id + "_check" + (i + 1));
+            elements[i].getElementsByTagName("label")[0].setAttribute("id", _list.id + "_label" + (i + 1));
 
-        elements[i].getElementsByTagName("ul")[0].setAttribute("id", _list.id + "_dropdown" + (i + 1));
-        elements[i].getElementsByTagName("ul")[0].innerHTML =
-        '<li>' + elements[i].getElementsByTagName("ul")[0].getElementsByTagName("li")[0].innerHTML + '</li>' +
-        '<li><a onclick="EraseElement(' + _list.id + '_element' + (i + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a></li>';
+            elements[i].getElementsByTagName("a")[0].setAttribute("data-activates", _list.id + "_dropdown" + (i + 1));
 
-        elements[i].getElementsByTagName("input")[1].setAttribute("id", _list.id + "_email" + (i + 1));
+            elements[i].getElementsByTagName("ul")[0].setAttribute("id", _list.id + "_dropdown" + (i + 1));
+            elements[i].getElementsByTagName("ul")[0].innerHTML =
+            '<li>' + elements[i].getElementsByTagName("ul")[0].getElementsByTagName("li")[0].innerHTML + '</li>' +
+            '<li><a onclick="EraseElement(' + _list.id + '_element' + (i + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a></li>';
+
+            elements[i].getElementsByTagName("input")[1].setAttribute("id", _list.id + "_email" + (i + 1));
+        }
+    }
+    else
+    {
+        _list.innerHTML = '<li class="AppZbisRDV_EmptyListPlaceholder"><i>This list is empty for now</i></li>';
     }
 
     SaveGrid();

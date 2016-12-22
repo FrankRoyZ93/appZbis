@@ -12,3 +12,14 @@
 {
     overflow: visible;
 }
+
+.AppZbisRDV_EmptyListPlaceholder
+{
+    text-align : center;
+}
+
+.dropdown-button 
+{    
+    position: relative;
+    top: -5px;
+}
