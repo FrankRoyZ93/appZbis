@@ -225,7 +225,7 @@ function Export(_Name)
 
     element.style.display = 'none';
     document.body.appendChild(element);
-
+    
     element.click();
 
     document.body.removeChild(element);
@@ -236,11 +236,11 @@ function CreateCSV()
 {
     var resultCSV = 'List_Name;Element_Name;Element_Present;Element_Email\n';
 
-    var lists = V_Grid.getElementsByTagName("ul");
+    var lists = V_Grid.getElementsByClassName("AppZbisRDV_ElementList");
     var i;
     for (i = 0; i < lists.length; i++)
     {
-        var elements = lists[i].getElementsByTagName("li");
+        var elements = lists[i].getElementsByClassName("AppZbisRDV_ListsElements");
         var j;
         for (j = 0; j < elements.length; j++)
         {
@@ -255,7 +255,7 @@ function CreateCSV()
                 resultCSV += ";non";
             }
 
-            resultCSV += elements[j].getElementById(lists[i].id + "_email" + (j + 1))[0].value + "\n";
+            resultCSV += ";" + elements[j].getElementsByTagName("input")[1].value;
         }
     }
 
@@ -641,9 +641,7 @@ function EraseElement(_toErase, _list)
 function ReorganiseList(_list)
 {
     var elementsNodeList = _list.getElementsByClassName("AppZbisRDV_ListsElements");
-
-    document.getElementById("debug").innerHTML = "";
-
+    
     if (elementsNodeList.length > 0)
     {
         // Convert elementsNodeList to an array
