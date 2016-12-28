@@ -216,25 +216,85 @@ function Import(_file)
 // Export all lists and elements in a csv file
 function Export(_Name)
 {
-    var element = document.createElement('a');
     var data = CreateCSV();
     var fileName = _Name + ".csv";
 
-    element.setAttribute('href', 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(data));
-    element.setAttribute('download', fileName);
+    var app = document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
+    //If on Android
+    if (app)
+    {
+        //data = data.replace(/;/g, ",");
 
-    element.style.display = 'none';
-    document.body.appendChild(element);
+        window.resolveLocalFileSystemURL(cordova.file.externalRootDirectory, function (dir) {
+            dir.getFile(fileName, { create: true }, function (file) {
+                file.createWriter(function (fileWriter) {
+
+                    fileWriter.onwriteend = function ()
+                    {
+                        document.getElementById("exportedFileResult").style = "color:green";
+                        switch (V_Language)
+                        {
+                            case "fr":
+                                document.getElementById("exportedFileResult").innerHTML = "Création du fichier " + fileName + " réussie. Vous pourrez le retrouvez à la racine du stockage interne de l'appareil. (>racine>sdcard)";
+                                break;
+                            default:
+                                document.getElementById("exportedFileResult").innerHTML = "Creation of file " + fileName + " successfull. You can find it at the root of your device's internal storage. (>racine>sdcard)";
+                        }
+                    };
+
+                    fileWriter.onerror = function (e)
+                    {
+                        document.getElementById("exportedFileResult").style = "color:red";
+                        switch (V_Language)
+                        {
+                            case "fr":
+                                document.getElementById("exportedFileResult").innerHTML = "Création du fichier " + fileName + " échouée. Code d'erreur : " + e.toString();
+                                break;
+                            default:
+                                document.getElementById("exportedFileResult").innerHTML = "Creation of file " + fileName + " failed. Error code : " + e.toString();
+                        }
+                    };
+
+                    //create blob for csv content
+                    var blob = new Blob([data], { type: 'text/csv' });
+
+                    fileWriter.write(blob);
+                })
+            });
+        });
+    }
+    //If on Web Browser
+    else
+    {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(data));
+        element.setAttribute('download', fileName);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+
+        document.getElementById("exportedFileResult").style = "color:green";
+        switch (V_Language)
+        {
+            case "fr":
+                document.getElementById("exportedFileResult").innerHTML = "Création du fichier " + fileName + " réussie. Vous pourrez le retrouvez à la racine du stockage interne de l'appareil. (>racine>sdcard)";
+                break;
+            default:
+                document.getElementById("exportedFileResult").innerHTML = "Creation of file " + fileName + " successfull. You can find it at the root of your device's internal storage. (>racine>sdcard)";
+        }
+    }
     
-    element.click();
-
-    document.body.removeChild(element);
+    $('#exportedFileModal').modal("open");
 }
 
 // Create the exported csv content
 function CreateCSV()
 {
-    var resultCSV = 'List_Name;Element_Name;Element_Present;Element_Email\n';
+    var resultCSV = '"List_Name";"Element_Name";"Element_Present";"Element_Email"\n';
 
     var lists = V_Grid.getElementsByClassName("AppZbisRDV_ElementList");
     var i;
@@ -244,18 +304,18 @@ function CreateCSV()
         var j;
         for (j = 0; j < elements.length; j++)
         {
-            resultCSV += lists[i].parentNode.getElementsByTagName("h4")[0].innerHTML + ";" + elements[j].getElementsByTagName("label")[0].innerHTML;
+            resultCSV += '"' + lists[i].parentNode.getElementsByTagName("h4")[0].innerHTML + '";"' + elements[j].getElementsByTagName("label")[0].innerHTML + '"';
 
             if(elements[j].getElementsByTagName("input")[0].checked)
             {
-                resultCSV += ";oui";
+                resultCSV += ';"oui"';
             }
             else
             {
-                resultCSV += ";non";
+                resultCSV += ';"non"';
             }
 
-            resultCSV += ";" + elements[j].getElementsByTagName("input")[1].value;
+            resultCSV += ';"' + elements[j].getElementsByTagName("input")[1].value + '"';
         }
     }
 
@@ -340,7 +400,7 @@ function CreateList(_name)
         // hide the title changer field
         $("#list" + (nbOfElements + 1) + "ChangeTitle").hide();
         
-        $('#addNewList').modal("close");
+        $('#addNewListModal').modal("close");
 
         SaveGrid();
 
@@ -419,7 +479,7 @@ function SetListToAddNewElement(_list)
 {
     V_ListToAddNewElement = _list;
 
-    $('#addNewElement').modal("open");
+    $('#addNewElementModal').modal("open");
 }
 
 // Set the list to remove after the user sets parameters
@@ -428,7 +488,7 @@ function SetListToRemove(_list)
     V_ListToRemove = _list;
     document.getElementById("removeListText").innerHTML = "Are you sure you want to remove " + _list.parentNode.getElementsByTagName("h4")[0].innerHTML + "?";
 
-    $('#removeList').modal("open");
+    $('#removeListModal').modal("open");
 }
 
 // Sets up the title changer for the user
@@ -495,7 +555,7 @@ function AddElement(_toAddName, _toAddEmail)
 
         AddNewElement(_toAddName, _toAddEmail, V_ListToAddNewElement);
 
-        $('#addNewElement').modal("close");
+        $('#addNewElementModal').modal("close");
 
         V_ListToAddNewElement = null;
 
@@ -705,7 +765,7 @@ function RemoveList()
 
         V_ListToRemove = null;
 
-        $('#removeList').modal("close");
+        $('#removeListModal').modal("close");
 
         ReorganiseGrid();
     }
@@ -768,7 +828,7 @@ function ChangeToBaguette()
     document.getElementById("createNewList").innerHTML = "Créer";
 
     //Add element modal
-    document.getElementById("addNewElement").getElementsByTagName("h4")[0].innerHTML = "Ajouter un nouvel élément...";
+    document.getElementById("addNewElementModal").getElementsByTagName("h4")[0].innerHTML = "Ajouter un nouvel élément...";
     document.getElementById("addNewElementCreateNewTab").innerHTML = "Créer élément";
     document.getElementById("addNewElementInsertTab").innerHTML = "Insérer élément";
     document.getElementById("addNewElementName").placeholder = "Nom...";
@@ -794,6 +854,9 @@ function ChangeToBaguette()
     //Export modal
     document.getElementById("fileToExportName").placeholder = "Entrer un nom de fichier...";
     document.getElementById("exportFileButton").innerHTML = "Exporter";
+
+    //Exported file modal
+    document.getElementById("exportedFileContinue").innerHTML = "Continuer";
 
     // List //
     var lists = document.getElementsByClassName("AppZbisRDV_List");
