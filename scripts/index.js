@@ -181,31 +181,34 @@ function Import(_file)
         var i;
         for (i = 1; i < listsToLoad.length; i++)
         {
-            var listParameters = listsToLoad[i].split(";");
-            var listInUse;
-
-            if (!Contains(listParameters[0], listsCreatedNames))
+            if (listsToLoad[i] != "")
             {
-                listsCreatedNames.push(listParameters[0]);
+                var listParameters = listsToLoad[i].split(";");
+                var listInUse;
 
-                listInUse = CreateList(listParameters[0]);
-                
-                listsCreated.push(listInUse);
-            }
-            else
-            {
-                listInUse = listsCreated[listsCreatedNames.indexOf(listParameters[0])];
-            }
+                if (!Contains(listParameters[0], listsCreatedNames)) 
+                {
+                    listsCreatedNames.push(listParameters[0]);
 
-            var newElement = AddNewElement(listParameters[1], listParameters[3], listInUse);
+                    listInUse = CreateList(listParameters[0]);
 
-            if (listParameters[2].includes("oui"))
-            {
-                CheckElement(newElement, true);
-            }
-            else
-            {
-                CheckElement(newElement, false);
+                    listsCreated.push(listInUse);
+                }
+                else
+                {
+                    listInUse = listsCreated[listsCreatedNames.indexOf(listParameters[0])];
+                }
+
+                var newElement = AddNewElement(listParameters[1], listParameters[3], listInUse);
+
+                if (listParameters[2].includes("oui"))
+                {
+                    CheckElement(newElement, true);
+                }
+                else
+                {
+                    CheckElement(newElement, false);
+                }
             }
         }
     }
@@ -294,7 +297,7 @@ function Export(_Name)
 // Create the exported csv content
 function CreateCSV()
 {
-    var resultCSV = '"List_Name";"Element_Name";"Element_Present";"Element_Email"\n';
+    var resultCSV = 'List_Name;Element_Name;Element_Present;Element_Email\n';
 
     var lists = V_Grid.getElementsByClassName("AppZbisRDV_ElementList");
     var i;
@@ -304,18 +307,18 @@ function CreateCSV()
         var j;
         for (j = 0; j < elements.length; j++)
         {
-            resultCSV += '"' + lists[i].parentNode.getElementsByTagName("h4")[0].innerHTML + '";"' + elements[j].getElementsByTagName("label")[0].innerHTML + '"';
+            resultCSV += lists[i].parentNode.getElementsByTagName("h4")[0].innerHTML + ';' + elements[j].getElementsByTagName("label")[0].innerHTML;
 
             if(elements[j].getElementsByTagName("input")[0].checked)
             {
-                resultCSV += ';"oui"';
+                resultCSV += ';oui';
             }
             else
             {
-                resultCSV += ';"non"';
+                resultCSV += ';non';
             }
 
-            resultCSV += ';"' + elements[j].getElementsByTagName("input")[1].value + '"';
+            resultCSV += ';' + elements[j].getElementsByTagName("input")[1].value + '\n';
         }
     }
 
