@@ -147,9 +147,12 @@ function RefreshElements()
         var i;
         for (i = 0; i < jsonObj.element.length; i++)
         {
-            var newLi = $('<li id="element' + (i + 1) + '"></li>');
-            var newA = $('<a onclick="DisplayElementToInsert("' + jsonObj.element[i].name + '", "' + jsonObj.element[i].email + '")">' + jsonObj.element[i].name + '</a>');
+            var objName = jsonObj.element[i].name;
+            var objEmail = jsonObj.element[i].email;
 
+            var newLi = $('<li id="element' + (i + 1) + '"></li>');
+            var newA = $('<a onclick="DisplayElementToInsert(\'' + objName + '\', \'' + objEmail + '\')">' + objName + '</a>');
+            
             $("#addNewElementInsertDropdown").append(newLi);
             newLi.append(newA);
         }
@@ -201,9 +204,7 @@ function Import(_file)
                 }
 
                 var newElement = AddNewElement(listParameters[1], listParameters[3], listInUse);
-
-                console.log(listParameters[2]);
-
+                
                 if (listParameters[2].includes("oui"))
                 {
                     CheckElement(newElement, true);
@@ -347,7 +348,7 @@ function CreateList(_name)
     }
     else if (V_Grid == null || V_Grid == undefined)
     {
-        window.alert("hum... the grid doesn't exist...");
+        alert("hum... the grid doesn't exist...");
     }
     else
     {
@@ -420,7 +421,7 @@ function ReorganiseGrid()
 {
     if (V_Grid == null || V_Grid == undefined)
     {
-        window.alert("hum... the grid doesn't exist...");
+        alert("hum... the grid doesn't exist...");
     }
     else
     {        
@@ -433,8 +434,11 @@ function ReorganiseGrid()
             var h4title = lists.eq(i).find("h4").eq(0);
             var listName = h4title.html();
 
-            h4title.parent('<h4 id="list' + (i + 1) + 'Name" onclick="EnterNewTitle(list' + (i + 1) + 'Name, list' + (i + 1) + 'ChangeTitle)">' + listName + '</h4>' +
-                           '<input id="list' + (i + 1) + 'ChangeTitle" type="text" onblur="ChangeTitle(list' + (i + 1) + 'Name, list' + (i + 1) + 'ChangeTitle)" />');
+            h4title.parent().html('<h4 id="list' + (i + 1) + 'Name" onclick="EnterNewTitle(list' + (i + 1) + 'Name, list' + (i + 1) + 'ChangeTitle)">' + listName + '</h4>' +
+                                  '<input id="list' + (i + 1) + 'ChangeTitle" type="text" onblur="ChangeTitle(list' + (i + 1) + 'Name, list' + (i + 1) + 'ChangeTitle)" />');
+
+            // hide the title changer field
+            $("#list" + (i + 1) + "ChangeTitle").hide();
 
             var arrayOfA = lists.eq(i).find("a");
             
@@ -469,7 +473,7 @@ function ReorganiseGrid()
 // Set the list where a new element will be added after the user sets parameters
 function SetListToAddNewElement(_list)
 {
-    V_ListToAddNewElement = _list;
+    V_ListToAddNewElement = $(_list);
 
     $('#addNewElementModal').modal("open");
 }
@@ -477,8 +481,8 @@ function SetListToAddNewElement(_list)
 // Set the list to remove after the user sets parameters
 function SetListToRemove(_list)
 {
-    V_ListToRemove = _list;
-    $("#removeListText").html("Are you sure you want to remove " + _list.parent().find("h4").eq(0).html() + "?");
+    V_ListToRemove = $(_list);
+    $("#removeListText").html("Are you sure you want to remove " + $(_list).parent().find("h4").eq(0).html() + "?");
 
     $('#removeListModal').modal("open");
 }
@@ -520,7 +524,7 @@ function AddElement(_toAddName, _toAddEmail)
     }
     else if (V_ListToAddNewElement == null || V_ListToAddNewElement == undefined)
     {
-        window.alert("hum... the list doesn't exist...  // AddElement");
+        alert("hum... the list doesn't exist...  // AddElement");
     }
     else if (IsNameInList(V_ListToAddNewElement, _toAddName))
     {
@@ -546,9 +550,9 @@ function AddElement(_toAddName, _toAddEmail)
         $("#addNewElementError").html("");
         $("#nameToInsert").html("");
         $("#emailToInsert").html("");
-
+        
         AddNewElement(_toAddName, _toAddEmail, V_ListToAddNewElement);
-
+        
         $('#addNewElementModal').modal("close");
 
         V_ListToAddNewElement = null;
@@ -578,7 +582,7 @@ function AddNewElement(_toAddName, _toAddEmail, _list)
 {
     if (_list == null || _list == undefined)
     {
-        window.alert("hum... the list doesn't exist...  // AddNewElement");
+        alert("hum... the list doesn't exist...  // AddNewElement");
     }
     else 
     {
@@ -597,7 +601,7 @@ function AddNewElement(_toAddName, _toAddEmail, _list)
         var newDropdownEmail = $('<li><a>' + _toAddEmail + '</a></li>');
         var newDropdownErase = $('<li><a onclick="EraseElement(' + _list.prop("id") + '_element' + (nbOfElements + 1) + ', ' + _list.prop("id") + ')"><i class="material-icons">delete</i></a></li>')
         var newHidden = $('<input type="hidden" id="' + _list.prop("id") + "_email" + (nbOfElements + 1) + '" value="' + _toAddEmail + '" />');
-                
+
         _list.append(newLI);
         newLI.append(newBox);
         newLI.append(newLabel);
@@ -606,7 +610,7 @@ function AddNewElement(_toAddName, _toAddEmail, _list)
         newDropdown.append(newDropdownEmail);
         newDropdown.append(newDropdownErase);
         newLI.append(newHidden);
-                
+
         SaveGrid();
         
         //Save each time a checkbox is checked
@@ -636,23 +640,23 @@ function EraseElement(_toErase, _list)
 {
     if (_toErase == null || _toErase == undefined)
     {
-        window.alert("Alert! This element doesn't exist anymore!");
+        alert("Alert! This element doesn't exist anymore!");
     }
     else if (_list == null || _list == undefined)
     {
-        window.alert("hum... the list doesn't exist...  // EraseElement");
+        alert("hum... the list doesn't exist...  // EraseElement");
     }
     else
     {
-        var elements = $(_list).find("li");
+        var elements = $(_list).find(".AppZbisRDV_ListsElements");
 
         // We will now check in the list where '_toErase' is located		
         for (i = 0; i < elements.length; i++)
         {
-            if (elements.eq(i) == _toErase)
+            if (elements.eq(i).prop("id") === $(_toErase).prop("id"))
             {
-                $(_list).remove(elements.eq(i));
-                ReorganiseList(_list);
+                elements.eq(i).remove();
+                ReorganiseList($(_list));
                 break;
             }
         }
@@ -668,28 +672,28 @@ function ReorganiseList(_list)
     {
         for (i = 0; i < elementsNodeList.length; i++)
         {
-            elementsNodeList.eq(i).prop("id", _list.prop("id") + "_element" + (i + 1));
+            elementsNodeList.eq(i).prop("id", $(_list).prop("id") + "_element" + (i + 1));
 
             var inputs = elementsNodeList.eq(i).find("input");
-            inputs.eq(0).prop("id", _list.prop("id") + "_check" + (i + 1));
+            inputs.eq(0).prop("id", $(_list).prop("id") + "_check" + (i + 1));
 
             var labels = elementsNodeList.eq(i).find("label");
-            labels.eq(0).prop("for", _list.prop("id") + "_check" + (i + 1));
-            labels.eq(0).prop("id", _list.prop("id") + "_label" + (i + 1));
+            labels.eq(0).prop("for", $(_list).prop("id") + "_check" + (i + 1));
+            labels.eq(0).prop("id", $(_list).prop("id") + "_label" + (i + 1));
 
-            elementsNodeList.eq(i).find("a").eq(0).prop("data-activates", _list.prop("id") + "_dropdown" + (i + 1));
+            elementsNodeList.eq(i).find("a").eq(0).prop("data-activates", $(_list).prop("id") + "_dropdown" + (i + 1));
 
             var uls = elementsNodeList.eq(i).find("ul");
-            uls.eq(0).prop("id", _list.prop("id") + "_dropdown" + (i + 1));
+            uls.eq(0).prop("id", $(_list).prop("id") + "_dropdown" + (i + 1));
             uls.eq(0).html('<li>' + uls.eq(0).find("li").eq(0).html() + '</li>' +
-            '<li><a onclick="EraseElement(' + _list.prop("id") + '_element' + (i + 1) + ', ' + _list.prop("id") + ')"><i class="material-icons">delete</i></a></li>');
+            '<li><a onclick="EraseElement(' + $(_list).prop("id") + '_element' + (i + 1) + ', ' + $(_list).prop("id") + ')"><i class="material-icons">delete</i></a></li>');
 
-            inputs.eq(1).prop("id", _list.prop("id") + "_email" + (i + 1));
+            inputs.eq(1).prop("id", $(_list).prop("id") + "_email" + (i + 1));
         }
     }
     else
     {
-        _list.html('<li class="AppZbisRDV_EmptyListPlaceholder"><i>This list is empty for now</i></li>');
+        $(_list).html('<li class="AppZbisRDV_EmptyListPlaceholder"><i>This list is empty for now</i></li>');
     }
 
     SaveGrid();
@@ -700,26 +704,15 @@ function RemoveList()
 {
     if (V_ListToRemove == null || V_ListToRemove == undefined)
     {
-        window.alert("Alert! This list doesn't exist anymore!");
+        alert("Alert! This list doesn't exist anymore!");
     }
     else if (V_Grid == null || V_Grid == undefined)
     {
-        window.alert("hum... the grid doesn't exist...");
+        alert("hum... the grid doesn't exist...");
     }
     else
     {
-        var lists = V_Grid.find("ul");
-
-        // We will now check in the grid where '_list' is located
-        var i;
-        for (i = 0; i < lists.length; i++)
-        {
-            if (lists.eq(i) == V_ListToRemove)
-            {
-                lists.eq(i).parent().parent().parent().remove(lists.eq(i).parent().parent());
-                break;
-            }
-        }
+        $(V_ListToRemove).parent().parent().remove();
 
         $("#removeListText").html("");
 
