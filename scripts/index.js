@@ -231,40 +231,42 @@ function Export(_Name)
 
     if (V_OnMobile)
     {
-        window.resolveLocalFileSystemURL(cordova.file.externalRootDirectory, function (dir) {
-            dir.getFile(fileName, { create: true }, function (file) {
-                file.createWriter(function (fileWriter) {
-                    fileWriter.onwriteend = function ()
-                    {
-                        $("#exportedFileResult").css("color", "green");
-                        switch (V_Language)
+        window.resolveLocalFileSystemURL(cordova.file.externalRootDirectory, function (rootDir) {
+            rootDir.getDirectory('AppZbisRDV_ImportedFiles', { create: true }, function (dir) {
+                dir.getFile(fileName, { create: true }, function (file) {
+                    file.createWriter(function (fileWriter) {
+                        fileWriter.onwriteend = function ()
                         {
-                            case "fr":
-                                $("#exportedFileResult").html("Création du fichier " + fileName + " réussie. Vous pourrez le retrouvez à la racine du stockage interne de l'appareil. (>racine>sdcard)");
-                                break;
-                            default:
-                                $("#exportedFileResult").html("Creation of file " + fileName + " successfull. You can find it at the root of your device's internal storage. (>racine>sdcard)");
-                        }
-                    };
+                            $("#exportedFileResult").css("color", "green");
+                            switch (V_Language)
+                            {
+                                case "fr":
+                                    $("#exportedFileResult").html("Création du fichier " + fileName + " réussie. Vous pourrez le retrouvez ici : >racine>sdcard>AppZbisRDV_ImportedFiles");
+                                    break;
+                                default:
+                                    $("#exportedFileResult").html("Creation of file " + fileName + " successfull. You can find it here : >racine>sdcard>AppZbisRDV_ImportedFiles");
+                            }
+                        };
 
-                    fileWriter.onerror = function (e)
-                    {
-                        $("#exportedFileResult").css("color", "red");
-                        switch (V_Language)
+                        fileWriter.onerror = function (e)
                         {
-                            case "fr":
-                                $("#exportedFileResult").html("Création du fichier " + fileName + " échouée. Code d'erreur : " + e.toString());
-                                break;
-                            default:
-                                $("#exportedFileResult").html("Creation of file " + fileName + " failed. Error code : " + e.toString());
-                        }
-                    };
+                            $("#exportedFileResult").css("color", "red");
+                            switch (V_Language)
+                            {
+                                case "fr":
+                                    $("#exportedFileResult").html("Création du fichier " + fileName + " échouée. Code d'erreur : " + e.toString());
+                                    break;
+                                default:
+                                    $("#exportedFileResult").html("Creation of file " + fileName + " failed. Error code : " + e.toString());
+                            }
+                        };
 
-                    //create blob for csv content
-                    var blob = new Blob([data], { type: 'text/csv' });
+                        //create blob for csv content
+                        var blob = new Blob([data], { type: 'text/csv' });
 
-                    fileWriter.write(blob);
-                })
+                        fileWriter.write(blob);
+                    })
+                });
             });
         });
     }
@@ -360,7 +362,6 @@ function CreateList(_name)
         var nbOfElements = V_Grid.find(".AppZbisRDV_List").length;
 
         // add list in the grid
-
         var newList = $('<div class="col l4 m6 s12 AppZbisRDV_List">' +
                         '   <div class="card-panel">' +
                         '       <div class="row">' +
