@@ -175,8 +175,8 @@ function Import(_file)
 {
     var reader = new FileReader();
 
-    reader.onloadend = function (e) {
-        var result = reader.result;
+    reader.onloadend = function () {
+        var result = this.result;
         var listsToLoad = result.split("\n");
         
         var listsCreatedNames = [];
@@ -362,28 +362,28 @@ function CreateList(_name)
         var nbOfElements = V_Grid.find(".AppZbisRDV_List").length;
 
         // add list in the grid
-        var newList = $('<div class="col l4 m6 s12 AppZbisRDV_List">' +
-                        '   <div class="card-panel">' +
-                        '       <div class="row">' +
-                        '           <div class="col s12">' +
-                        '               <h4 id="list' + (nbOfElements + 1) + 'Name" onclick="EnterNewTitle(list' + (nbOfElements + 1) + 'Name, list' + (nbOfElements + 1) + 'ChangeTitle)">' + _name + '</h4>' +
-                        '               <input id="list' + (nbOfElements + 1) + 'ChangeTitle" type="text" onblur="ChangeTitle(list' + (nbOfElements + 1) + 'Name, list' + (nbOfElements + 1) + 'ChangeTitle)" />' +
-                        '           </div>' +
-                        '       </div>' +
-                        '       <ul class="collection ui-sortable sortable AppZbisRDV_ElementList" id="list' + (nbOfElements + 1) + '">' +
-                        '       <li class="AppZbisRDV_EmptyListPlaceholder"><i>This list is empty for now</i></li>' +
-                        '       </ul>' +
-                        '       <!-- Add area -->' +
-                        '       <div class="row">' +
-                        '           <div class="col s6" id="list' + (nbOfElements + 1) + 'AddButtonCol">' +
-                        '               <a class="waves-effect waves-light btn green" id="list' + (nbOfElements + 1) + 'AddButton" onclick="SetListToAddNewElement(list' + (nbOfElements + 1) + ')">Add</a>' +
-                        '           </div>' +
-                        '           <div class="col s6" id="list' + (nbOfElements + 1) + 'DeleteButtonCol">' +
-                        '               <a class="waves-effect waves-light btn red" id="list' + (nbOfElements + 1) + 'DeleteButton" onclick="SetListToRemove(list' + (nbOfElements + 1) + ')">Delete</a>' +
-                        '           </div>' +
-                        '       </div>' +
-                        '   </div>' +
-                        '</div>');
+        var newList = $('<div class="col l4 m6 s12 AppZbisRDV_List">\
+                            <div class="card-panel">\
+                                <div class="row">\
+                                    <div class="col s12">\
+                                        <h4 id="list' + (nbOfElements + 1) + 'Name" onclick="EnterNewTitle(list' + (nbOfElements + 1) + 'Name, list' + (nbOfElements + 1) + 'ChangeTitle)">' + _name + '</h4>\
+                                        <input id="list' + (nbOfElements + 1) + 'ChangeTitle" type="text" onblur="ChangeTitle(list' + (nbOfElements + 1) + 'Name, list' + (nbOfElements + 1) + 'ChangeTitle)" />\
+                                    </div>\
+                                </div>\
+                                <ul class="collection ui-sortable sortable AppZbisRDV_ElementList" id="list' + (nbOfElements + 1) + '">\
+                                    <li class="AppZbisRDV_EmptyListPlaceholder"><i>This list is empty for now</i></li>\
+                                </ul>\
+                                <!-- Add area -->\
+                                <div class="row">\
+                                    <div class="col s6" id="list' + (nbOfElements + 1) + 'AddButtonCol">\
+                                        <a class="waves-effect waves-light btn green" id="list' + (nbOfElements + 1) + 'AddButton" onclick="SetListToAddNewElement(list' + (nbOfElements + 1) + ')">Add</a>\
+                                    </div>\
+                                    <div class="col s6" id="list' + (nbOfElements + 1) + 'DeleteButtonCol">\
+                                        <a class="waves-effect waves-light btn red" id="list' + (nbOfElements + 1) + 'DeleteButton" onclick="SetListToRemove(list' + (nbOfElements + 1) + ')">Delete</a>\
+                                    </div>\
+                                </div>\
+                            </div>\
+                         </div>');
 
         V_Grid.append(newList)
 
